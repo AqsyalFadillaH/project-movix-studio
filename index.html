@@ -1,0 +1,2948 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MOVIX — The Premiere Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:         #0A0E1A;
+  --bg-card:    #111827;
+  --bg-alt:     #161D2E;
+  --bg-input:   #1A2236;
+  --bg-dark:    #0D1320;
+  --gold:       #E5C34A;
+  --gold-dark:  #C9A227;
+  --gold-light: #F0D570;
+  --white:      #FFFFFF;
+  --txt-sec:    #8899AA;
+  --txt-muted:  #556070;
+  --border:     #1E2A3A;
+  --success:    #4CAF50;
+  --error:      #F44336;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --radius-full:999px;
+}
+html, body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body { display: flex; justify-content: center; }
+a { text-decoration: none; color: inherit; }
+button { border: none; cursor: pointer; font-family: inherit; background: none; color: inherit; }
+input { font-family: inherit; outline: none; border: none; }
+img { display: block; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ═══════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════ */
+#app {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN SYSTEM
+═══════════════════════════════════════════ */
+.screen {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg);
+  animation: slideIn .28s ease;
+}
+.screen.active { display: flex; }
+@keyframes slideIn { from { opacity:0; transform:translateX(18px);} to { opacity:1; transform:translateX(0);} }
+@keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+@keyframes slideDown { from { opacity:0; transform:translateY(-12px);} to {opacity:1; transform:translateY(0);} }
+
+/* ═══════════════════════════════════════════
+   ICONS (SVG)
+═══════════════════════════════════════════ */
+.ico { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ico-sm { width: 18px; height: 18px; }
+.ico-lg { width: 26px; height: 26px; }
+
+/* ═══════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════ */
+.logo-text {
+  color: var(--gold);
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+.gold-btn {
+  background: var(--gold);
+  color: var(--bg);
+  border-radius: var(--radius-full);
+  padding: 15px 28px;
+  font-weight: 700;
+  font-size: 15px;
+  width: 100%;
+  transition: background .2s, transform .1s;
+}
+.gold-btn:hover { background: var(--gold-light); }
+.gold-btn:active { transform: scale(.98); }
+.gold-btn:disabled { background: var(--bg-alt); color: var(--txt-muted); cursor: not-allowed; }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.badge-gold {
+  background: var(--gold);
+  color: var(--bg);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+.section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+.scroll-x {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.scroll-x::-webkit-scrollbar { display: none; }
+.star { color: var(--gold); }
+.txt-gold { color: var(--gold); }
+.txt-muted { color: var(--txt-muted); }
+.txt-sec { color: var(--txt-sec); }
+
+/* Icon button (used for nav back, bell, etc.) */
+.icon-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--white);
+  transition: border-color .2s, background .2s, transform .1s;
+  flex-shrink: 0;
+}
+.icon-btn:hover { border-color: var(--gold); color: var(--gold); }
+.icon-btn:active { transform: scale(.92); }
+.icon-btn-gold { color: var(--gold); }
+.icon-btn-plain {
+  background: rgba(0,0,0,.5);
+  border-color: rgba(255,255,255,.2);
+  color: white;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 52px 16px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  gap: 12px;
+}
+.topbar-center { flex: 1; text-align: center; }
+.topbar-spacer { width: 40px; height: 40px; flex-shrink: 0; }
+
+/* Bottom nav */
+#bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 430px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  z-index: 200;
+  padding: 8px 0 18px;
+}
+#bottom-nav.visible { display: flex; }
+.nav-items { display: flex; width: 100%; justify-content: space-around; }
+.nav-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  cursor: pointer; padding: 4px 12px;
+  transition: color .2s;
+  color: var(--txt-muted);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .3px;
+  background: none;
+  border: none;
+}
+.nav-item .ico { width: 22px; height: 22px; transition: transform .2s; }
+.nav-item.active { color: var(--gold); }
+.nav-item.active .ico { transform: scale(1.1); }
+
+/* ═══════════════════════════════════════════
+   LOCATION DROPDOWN
+═══════════════════════════════════════════ */
+.loc-wrap { position: relative; }
+.loc-btn {
+  display: flex; align-items: center; gap: 4px;
+  color: var(--gold); font-weight: 600; font-size: 14px;
+  cursor: pointer; padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  transition: background .2s;
+}
+.loc-btn:hover { background: rgba(229,195,74,.08); }
+.loc-btn .ico { width: 16px; height: 16px; }
+.loc-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-top: 6px;
+  min-width: 180px;
+  z-index: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  animation: slideDown .2s ease;
+  overflow: hidden;
+}
+.loc-dropdown.visible { display: block; }
+.loc-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--white);
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  text-align: left;
+  transition: background .2s;
+}
+.loc-option:last-child { border-bottom: none; }
+.loc-option:hover { background: var(--bg-alt); }
+.loc-option.selected { color: var(--gold); }
+.loc-option-check { color: var(--gold); margin-left: auto; opacity: 0; }
+.loc-option.selected .loc-option-check { opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   NOTIFICATION PANEL
+═══════════════════════════════════════════ */
+.notif-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  z-index: 800;
+  animation: fadeIn .2s;
+}
+.notif-backdrop.visible { display: block; }
+.notif-panel {
+  position: fixed;
+  top: 0; right: 50%; transform: translateX(50%);
+  width: 100%; max-width: 430px;
+  background: var(--bg-card);
+  z-index: 900;
+  display: none;
+  flex-direction: column;
+  max-height: 70vh;
+  border-bottom-left-radius: var(--radius-xl);
+  border-bottom-right-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  border-top: none;
+  animation: slideDown .25s ease;
+  overflow: hidden;
+}
+.notif-panel.visible { display: flex; }
+.notif-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 52px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.notif-header h3 { font-size: 17px; font-weight: 700; }
+.notif-clear { color: var(--gold); font-size: 12px; font-weight: 600; cursor: pointer; }
+.notif-list { overflow-y: auto; padding: 8px 0; }
+.notif-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-icon {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--bg-alt);
+  color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.notif-text { flex: 1; }
+.notif-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.notif-desc { font-size: 12px; color: var(--txt-sec); line-height: 1.5; }
+.notif-time { font-size: 11px; color: var(--txt-muted); margin-top: 4px; }
+.notif-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.notif-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--txt-sec);
+}
+
+/* Bell with badge */
+.bell-wrap { position: relative; }
+.bell-badge {
+  position: absolute;
+  top: 6px; right: 8px;
+  width: 8px; height: 8px;
+  background: var(--error);
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+}
+
+/* ═══════════════════════════════════════════
+   1. ONBOARDING
+═══════════════════════════════════════════ */
+#screen-onboarding { background: var(--bg); animation: fadeIn .4s ease; }
+.onboarding-slide { display: none; flex-direction: column; height: 100vh; }
+.onboarding-slide.active { display: flex; }
+.onboarding-img-wrap { position: relative; height: 58vh; overflow: hidden; }
+.onboarding-img-wrap::after {
+  content:''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,.2) 0%, rgba(10,14,26,.9) 100%);
+}
+.onboarding-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.ob-logo { position: absolute; top: 0; left: 0; right: 0; padding: 52px 0 0; text-align: center; z-index: 10; }
+.onboarding-bottom {
+  flex: 1;
+  background: var(--bg-card);
+  border-radius: 20px 20px 0 0;
+  margin-top: -20px;
+  z-index: 5;
+  padding: 28px 24px 0;
+  display: flex; flex-direction: column;
+}
+.onboarding-bottom h2 { font-size: 24px; font-weight: 800; line-height: 1.3; text-align: center; margin-bottom: 10px; }
+.onboarding-bottom p { color: var(--txt-sec); font-size: 14px; text-align: center; line-height: 1.6; margin-bottom: 28px; }
+.ob-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
+.ob-dot { width: 8px; height: 8px; border-radius: 4px; background: var(--txt-muted); transition: all .3s; }
+.ob-dot.active { width: 28px; background: var(--gold); }
+.ob-actions { display: flex; flex-direction: column; gap: 12px; }
+.ob-skip {
+  background: none; color: var(--txt-sec);
+  font-size: 11px; letter-spacing: 2px; font-weight: 600;
+  padding: 8px; text-align: center; cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════
+   2. LOGIN
+═══════════════════════════════════════════ */
+#screen-login {
+  justify-content: center;
+  padding: 40px 24px;
+  animation: fadeIn .4s;
+}
+.login-header { text-align: center; margin-bottom: 32px; }
+.login-header .logo-text { font-size: 30px; display: block; margin-bottom: 6px; }
+.login-header span { color: var(--txt-sec); font-size: 11px; letter-spacing: 3px; }
+.login-card { padding: 24px; }
+.login-card h2 { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.login-card .sub { color: var(--txt-sec); font-size: 13px; text-align: center; margin-bottom: 24px; }
+.form-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; font-weight: 500; margin-bottom: 8px;
+}
+.form-label .forgot { color: var(--gold); font-weight: 600; cursor: pointer; font-size: 12px; }
+.input-wrap {
+  display: flex; align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 14px; margin-bottom: 14px;
+  transition: border-color .2s;
+}
+.input-wrap:focus-within { border-color: var(--gold); }
+.input-wrap .iico { font-size: 15px; margin-right: 10px; color: var(--txt-sec); }
+.input-wrap input { flex: 1; background: none; color: var(--white); font-size: 14px; padding: 14px 0; }
+.input-wrap input::placeholder { color: var(--txt-muted); }
+.input-wrap .eye-btn { background: none; cursor: pointer; font-size: 15px; padding: 4px; }
+.login-card .gold-btn { margin-top: 8px; }
+.or-divider { text-align: center; color: var(--txt-sec); font-size: 12px; margin: 16px 0; }
+.social-row { display: flex; justify-content: center; gap: 12px; }
+.social-btn {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: var(--bg-input); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer;
+  transition: border-color .2s;
+}
+.social-btn:hover { border-color: var(--gold); }
+.register-row { text-align: center; margin-top: 20px; color: var(--txt-sec); font-size: 13px; }
+.register-row span { color: var(--gold); font-weight: 600; cursor: pointer; }
+
+/* ═══════════════════════════════════════════
+   3. HOME
+═══════════════════════════════════════════ */
+#screen-home { padding: 0 0 90px; }
+.home-topbar {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 52px 16px 14px;
+  position: relative;
+}
+.search-bar {
+  display: flex; align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0 16px; margin: 0 16px 16px;
+  transition: border-color .2s;
+  gap: 8px;
+}
+.search-bar:focus-within { border-color: var(--gold); }
+.search-bar input { flex: 1; background: none; color: var(--white); font-size: 14px; padding: 12px 0; }
+.search-bar input::placeholder { color: var(--txt-muted); }
+.search-bar .ico { color: var(--txt-sec); }
+
+/* Hero Banner */
+.hero-banner {
+  margin: 0 16px 20px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  height: 200px;
+}
+.hero-img { width: 100%; height: 100%; object-fit: cover; }
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.2) 60%);
+}
+.hero-content { position: absolute; bottom: 14px; left: 14px; right: 14px; }
+.hero-content h2 { font-size: 20px; font-weight: 800; margin: 6px 0 12px; line-height: 1.2; }
+.hero-btns { display: flex; gap: 8px; }
+.hero-book-btn {
+  background: var(--gold); color: var(--bg);
+  border-radius: var(--radius-full); padding: 8px 18px;
+  font-weight: 700; font-size: 13px; cursor: pointer;
+  transition: background .2s;
+}
+.hero-book-btn:hover { background: var(--gold-light); }
+.hero-trailer-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: var(--radius-full);
+  padding: 8px 16px; color: white;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+}
+
+/* Movie cards - horizontal, BIGGER */
+.movies-row { padding: 0 16px 4px; gap: 14px; }
+.movie-card {
+  width: 160px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.movie-card:hover { transform: translateY(-3px); }
+.movie-poster-wrap {
+  position: relative;
+  width: 160px;
+  height: 240px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 10px;
+  background: var(--bg-alt);
+  box-shadow: 0 4px 18px rgba(0,0,0,.45);
+  flex-shrink: 0;
+}
+.movie-poster-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+/* Canvas poster (fallback / always shown under img) */
+.movie-poster-wrap canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+.movie-poster-wrap img { z-index: 1; }
+.movie-poster-wrap.poster-fallback img { display: none; }
+.movie-poster-wrap.poster-fallback canvas { z-index: 0; }
+
+/* Coming Soon badge on poster */
+.coming-soon-badge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(10,14,26,.95) 0%, rgba(10,14,26,.5) 100%);
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-align: center;
+  padding: 10px 6px 8px;
+  z-index: 3;
+}
+.rating-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(0,0,0,.78);
+  backdrop-filter: blur(4px);
+  border-radius: 6px; padding: 3px 8px;
+  font-size: 11px; color: var(--gold); font-weight: 700;
+  display: flex; align-items: center; gap: 3px;
+  z-index: 3;
+}
+.movie-card h4 {
+  font-size: 13px; font-weight: 700;
+  margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 160px;
+}
+.movie-card .genre-txt { font-size: 11px; color: var(--txt-sec); }
+
+/* Event banner — taller, proper proportions */
+.event-banner {
+  margin: 0 16px 16px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  height: 170px;
+  cursor: pointer;
+}
+.event-banner img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.event-banner .hero-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.3) 60%);
+}
+.event-content { position: absolute; bottom: 16px; left: 16px; right: 16px; }
+.members-badge {
+  background: var(--gold); color: var(--bg);
+  font-size: 10px; font-weight: 800; letter-spacing: .8px;
+  padding: 3px 8px; border-radius: 5px;
+  display: inline-block; margin-bottom: 6px;
+}
+.event-content h4 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.event-content p { font-size: 12px; color: rgba(255,255,255,.8); }
+
+/* Promo mini grid */
+.promo-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 0 16px;
+}
+.promo-mini {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px; cursor: pointer;
+  transition: border-color .2s;
+}
+.promo-mini:hover { border-color: var(--gold); }
+.promo-mini .ico { color: var(--gold); margin-bottom: 8px; }
+.promo-mini h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.promo-mini p { font-size: 11px; color: var(--txt-sec); }
+
+/* ═══════════════════════════════════════════
+   4. SEARCH
+═══════════════════════════════════════════ */
+#screen-search { padding: 0 0 90px; }
+.search-page-bar {
+  margin: 0 16px 16px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0 16px;
+  transition: border-color .2s;
+}
+.search-page-bar:focus-within { border-color: var(--gold); }
+.search-page-bar input { flex: 1; background: none; color: var(--white); font-size: 14px; padding: 13px 0; }
+.search-page-bar input::placeholder { color: var(--txt-muted); }
+.search-page-bar .ico { color: var(--txt-sec); }
+.clear-btn {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--bg-alt);
+  color: var(--txt-sec);
+  cursor: pointer;
+  font-size: 11px;
+  display: none;
+  align-items: center; justify-content: center;
+}
+.clear-btn.visible { display: flex; }
+
+/* Genre row in search */
+.search-genre-section { margin-bottom: 18px; }
+.search-genre-label {
+  font-size: 11px;
+  color: var(--txt-muted);
+  letter-spacing: 2px;
+  padding: 0 16px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.genre-chip {
+  padding: 8px 16px; border-radius: var(--radius-full);
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--txt-sec); font-size: 13px; font-weight: 500;
+  cursor: pointer; white-space: nowrap; transition: all .2s;
+  flex-shrink: 0;
+}
+.genre-chip.active { background: var(--gold); border-color: var(--gold); color: var(--bg); font-weight: 700; }
+.genre-chip:hover:not(.active) { border-color: var(--gold); color: var(--white); }
+
+.recent-section { padding: 0 16px 18px; }
+.recent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.clear-all { color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; }
+.recent-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.recent-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 7px 12px; font-size: 13px; color: var(--white);
+}
+.recent-chip-del {
+  background: none; color: var(--txt-muted);
+  font-size: 12px; cursor: pointer; padding: 2px;
+}
+.movies-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 16px 16px;
+}
+.movie-grid-card {
+  cursor: pointer;
+  transition: transform .2s;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+}
+.movie-grid-card:hover { transform: translateY(-2px); }
+.movie-grid-card-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-alt);
+  margin-bottom: 8px;
+}
+.movie-grid-card-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.movie-grid-card h4 {
+  font-size: 12px; font-weight: 700; margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: block; width: 100%;
+}
+.movie-grid-card .genre-txt { font-size: 10px; color: var(--txt-sec); }
+.empty-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--txt-sec);
+  grid-column: 1 / -1;
+}
+.empty-results .ico { color: var(--txt-muted); margin-bottom: 12px; width: 48px; height: 48px; }
+
+/* ═══════════════════════════════════════════
+   5. MOVIE DETAIL
+═══════════════════════════════════════════ */
+#screen-detail { padding: 0 0 90px; }
+.detail-backdrop-wrap { position: relative; height: 320px; }
+.detail-backdrop { width: 100%; height: 100%; object-fit: cover; }
+.detail-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,.3) 0%, var(--bg) 100%);
+}
+.detail-nav {
+  position: absolute; top: 0; left: 0; right: 0;
+  display: flex; justify-content: space-between;
+  padding: 52px 16px 0; z-index: 10;
+}
+.detail-play {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; padding-top: 20px;
+  pointer-events: none;
+}
+.play-btn {
+  width: 62px; height: 62px; border-radius: 50%;
+  background: var(--gold); display: flex;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  color: var(--bg);
+  transition: transform .2s, background .2s;
+}
+.play-btn:hover { background: var(--gold-light); transform: scale(1.05); }
+.trailer-lbl { color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: 3px; }
+.detail-body { padding: 20px 16px; }
+.detail-formats { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.detail-title { font-size: 20px; font-weight: 900; letter-spacing: .3px; margin-bottom: 10px; }
+.detail-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--txt-sec); margin-bottom: 16px; }
+.detail-meta .dot { color: var(--txt-muted); }
+.detail-meta .rating-val { color: var(--white); font-weight: 600; }
+.tags-row { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 2px; scrollbar-width: none; }
+.tags-row::-webkit-scrollbar { display: none; }
+.tag-chip {
+  background: var(--bg-dark); border: 1px solid var(--border);
+  border-radius: var(--radius-full); padding: 7px 14px;
+  font-size: 13px; color: var(--white); white-space: nowrap;
+}
+.synopsis-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.synopsis-txt { font-size: 14px; color: var(--txt-sec); line-height: 1.7; margin-bottom: 20px; }
+.info-card {
+  display: grid; grid-template-columns: 1fr 1px 1fr;
+  background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.info-card-divider { background: var(--border); }
+.info-col { padding: 0 12px; }
+.info-col:first-child { padding-left: 0; }
+.info-col:last-child { padding-right: 0; }
+.info-lbl { font-size: 10px; color: var(--txt-muted); letter-spacing: 1px; margin-bottom: 6px; }
+.info-val { font-size: 17px; font-weight: 700; }
+.bottom-bar {
+  position: fixed; bottom: 0;
+  width: 100%; max-width: 430px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 14px 20px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 200;
+}
+.price-lbl { color: var(--gold); font-size: 11px; font-weight: 600; }
+.price-val { color: var(--gold); font-size: 17px; font-weight: 800; }
+.book-btn {
+  background: var(--gold); color: var(--bg);
+  border-radius: var(--radius-full); padding: 13px 26px;
+  font-weight: 700; font-size: 14px; cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+/* Coming Soon badge on poster */
+.coming-soon-badge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(10,14,26,.95) 0%, rgba(10,14,26,.6) 100%);
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 10px 6px 8px;
+  z-index: 2;
+}
+
+/* Notify button variant (Coming Soon films) */
+.book-btn-notify {
+  background: transparent;
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+}
+.book-btn-notify:hover { background: rgba(229,195,74,.12); }
+.book-btn:not(.book-btn-notify):hover { background: var(--gold-light); }
+.book-btn:active { transform: scale(.97); }
+
+/* ═══════════════════════════════════════════
+   6. SEAT PICKER
+═══════════════════════════════════════════ */
+#screen-seat { padding: 0 0 100px; }
+.seat-header {
+  display: flex; align-items: center;
+  padding: 52px 16px 14px; gap: 12px;
+}
+.seat-header-info { flex: 1; text-align: center; }
+.seat-header-info h3 { font-size: 13px; font-weight: 700; }
+.seat-header-info p { font-size: 11px; color: var(--txt-sec); letter-spacing: 1px; }
+/* Section label (above date/time rows) */
+.seat-section-lbl {
+  font-size: 11px;
+  color: var(--txt-muted);
+  letter-spacing: 2px;
+  padding: 0 16px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.seat-section-lbl .ico { width: 13px; height: 13px; color: var(--gold); }
+.date-scroll { padding: 0 16px 18px; gap: 10px; }
+.date-btn {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  width: 64px; height: 72px;
+  padding: 8px 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+  gap: 2px;
+}
+.date-btn:hover:not(.active) { border-color: var(--gold); }
+.date-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 4px 12px rgba(229,195,74,.3);
+}
+.date-month {
+  font-size: 10px; color: var(--txt-sec);
+  font-weight: 600; letter-spacing: 1px;
+}
+.date-day { font-size: 22px; font-weight: 800; color: var(--white); line-height: 1; }
+.date-weekday { font-size: 9px; color: var(--txt-muted); font-weight: 500; margin-top: 2px; }
+.date-btn.active .date-month,
+.date-btn.active .date-day,
+.date-btn.active .date-weekday { color: var(--bg); }
+.time-scroll { padding: 0 16px 22px; gap: 8px; }
+.time-btn {
+  min-width: 78px;
+  padding: 11px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--white);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+  text-align: center;
+}
+.time-btn:hover:not(.active) { border-color: var(--gold); }
+.time-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(229,195,74,.3);
+}
+.screen-line {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 24px; margin-bottom: 20px;
+}
+.screen-line::before, .screen-line::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.screen-lbl { font-size: 10px; color: var(--txt-muted); letter-spacing: 2px; }
+.seat-grid { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 8px; }
+.seat-row { display: flex; gap: 5px; }
+.seat {
+  width: 33px; height: 29px;
+  border-radius: 5px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 600;
+  cursor: pointer; transition: all .15s;
+}
+.seat-avail { background: #2A3550; color: var(--txt-sec); }
+.seat-avail:hover { background: #3A4560; }
+.seat-selected { background: var(--gold); color: var(--bg); transform: scale(1.05); }
+.seat-occupied { background: #1E2A3A; color: var(--txt-muted); cursor: not-allowed; opacity: .6; }
+.seat-legend {
+  display: flex; justify-content: center; gap: 24px;
+  background: var(--bg-card); border-radius: var(--radius-lg);
+  padding: 14px; margin: 16px;
+  border: 1px solid var(--border);
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--txt-sec); }
+.legend-dot { width: 16px; height: 16px; border-radius: 3px; }
+.summary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+.summary-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px;
+}
+.summary-card-lbl {
+  font-size: 10px; color: var(--txt-muted); letter-spacing: 1px;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.summary-card-val { font-size: 14px; font-weight: 700; color: var(--white); }
+
+/* ═══════════════════════════════════════════
+   7. PAYMENT
+═══════════════════════════════════════════ */
+#screen-payment { padding: 0 0 130px; }
+.timer-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px;
+  margin: 0 16px 20px;
+}
+.timer-icon { color: var(--gold); }
+.timer-lbl { font-size: 12px; color: var(--txt-sec); }
+.timer-val { font-size: 22px; font-weight: 800; color: var(--gold); }
+.pay-section-lbl {
+  font-size: 11px; color: var(--gold); font-weight: 700;
+  letter-spacing: 2px; padding: 0 16px; margin-bottom: 12px;
+}
+.order-card {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px;
+  margin: 0 16px 20px;
+}
+.order-poster {
+  width: 68px; height: 88px; border-radius: var(--radius-sm);
+  background: var(--bg-alt); flex-shrink: 0; overflow: hidden;
+}
+.order-poster img { width: 100%; height: 100%; object-fit: cover; }
+.order-info { flex: 1; }
+.order-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.order-info .cinema { font-size: 12px; color: var(--txt-sec); margin-bottom: 8px; }
+.order-meta {
+  font-size: 12px; color: var(--txt-sec); margin-bottom: 3px;
+  display: flex; align-items: center; gap: 6px;
+}
+.order-meta .ico { width: 14px; height: 14px; }
+.ewallet-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 16px 16px; }
+.ewallet-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px 8px;
+  cursor: pointer; transition: border-color .2s;
+  font-size: 12px; color: var(--txt-sec); font-weight: 500;
+}
+.ewallet-btn span { font-size: 24px; }
+.ewallet-btn.active { border-color: var(--gold); color: var(--gold); }
+.sub-lbl { font-size: 13px; color: var(--txt-sec); padding: 0 16px; margin-bottom: 10px; }
+.other-methods {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); margin: 0 16px 20px; overflow: hidden;
+}
+.method-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background .2s; font-size: 14px;
+  width: 100%;
+  text-align: left;
+  color: var(--white);
+}
+.method-row:last-child { border-bottom: none; }
+.method-row:hover, .method-row.active { background: var(--bg-alt); }
+.method-row .mico { color: var(--gold); width: 28px; flex-shrink: 0; }
+.method-row .mlbl { flex: 1; }
+.method-row .marrow { color: var(--txt-sec); flex-shrink: 0; }
+.detail-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px;
+  margin: 0 16px 16px;
+}
+.detail-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+.detail-row .dlbl { color: var(--txt-sec); }
+.detail-row .dval { color: var(--white); }
+.detail-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.detail-row.total .dlbl { font-weight: 700; color: var(--white); }
+.detail-row.total .dval { font-weight: 800; color: var(--gold); font-size: 17px; }
+.pay-bottom {
+  position: fixed; bottom: 0;
+  width: 100%; max-width: 430px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 14px 16px 24px;
+  z-index: 200;
+}
+.pay-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--gold); color: var(--bg);
+  border-radius: var(--radius-full); padding: 15px;
+  font-weight: 700; font-size: 15px; width: 100%;
+  cursor: pointer; margin-bottom: 8px;
+  transition: background .2s;
+}
+.pay-btn:disabled { background: var(--bg-alt); color: var(--txt-muted); cursor: not-allowed; }
+.terms-txt { text-align: center; font-size: 11px; color: var(--txt-muted); }
+
+/* ═══════════════════════════════════════════
+   8. PAYMENT SUCCESS
+═══════════════════════════════════════════ */
+#screen-success {
+  padding: 0 24px 32px;
+  align-items: center;
+  animation: fadeIn .5s ease;
+}
+.success-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 52px; padding-bottom: 20px; width: 100%;
+}
+.success-icon-wrap { text-align: center; margin-bottom: 12px; }
+.success-circle {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: #1B2D4A; border: 3px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); margin: 0 auto;
+}
+.success-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+.success-sub { font-size: 13px; color: var(--txt-sec); text-align: center; margin-bottom: 20px; }
+.ticket-card {
+  width: 100%; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-xl);
+  overflow: hidden; margin-bottom: 20px;
+}
+.ticket-top { display: flex; gap: 14px; padding: 14px; border-bottom: 1px solid var(--border); }
+.ticket-poster {
+  width: 80px; height: 100px; object-fit: cover;
+  border-radius: var(--radius-sm); background: var(--bg-alt); flex-shrink: 0;
+}
+.ticket-info { flex: 1; }
+.confirmed-badge {
+  background: var(--bg-alt); border-radius: var(--radius-sm);
+  padding: 2px 8px; display: inline-block;
+  color: var(--gold); font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; margin-bottom: 6px;
+}
+.ticket-info h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.ticket-info .tdate { font-size: 13px; color: var(--txt-sec); display: flex; align-items: center; gap: 6px; }
+.tear-line { display: flex; align-items: center; padding: 0 12px; overflow: hidden; }
+.tear-line-inner { flex: 1; border-top: 1px dashed var(--border); margin: 0 8px; }
+.ticket-bottom { display: flex; padding: 14px; gap: 20px; }
+.ticket-detail-col .tdlbl { font-size: 10px; color: var(--txt-muted); letter-spacing: 1px; margin-bottom: 4px; }
+.ticket-detail-col .tdval { font-size: 20px; font-weight: 800; }
+.ticket-detail-col .tdval.cinema-name { font-size: 16px; }
+.booking-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-alt); border-radius: var(--radius-md);
+  margin: 0 14px 14px; padding: 10px;
+  border: 1px solid var(--border);
+}
+.qr-placeholder {
+  width: 44px; height: 44px;
+  background: var(--bg); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--white);
+}
+.booking-info { flex: 1; }
+.booking-lbl { font-size: 11px; color: var(--txt-sec); }
+.booking-id { font-size: 14px; font-weight: 700; }
+.view-ticket-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--gold); color: var(--bg);
+  border-radius: var(--radius-full); padding: 15px;
+  font-weight: 700; font-size: 15px; width: 100%;
+  cursor: pointer; margin-bottom: 10px;
+  transition: background .2s;
+}
+.view-ticket-btn:hover { background: var(--gold-light); }
+.return-home-btn {
+  background: #1B2D4A; border: 1px solid var(--border);
+  border-radius: var(--radius-full); padding: 15px;
+  font-weight: 700; font-size: 15px; width: 100%;
+  color: var(--white); cursor: pointer;
+  transition: background .2s;
+}
+.return-home-btn:hover { background: #243D5A; }
+
+/* ═══════════════════════════════════════════
+   9. TICKETS / E-TICKET
+═══════════════════════════════════════════ */
+#screen-tickets { padding: 0 0 90px; }
+.tickets-empty {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--txt-sec);
+}
+.tickets-empty .ico { color: var(--txt-muted); margin-bottom: 16px; width: 56px; height: 56px; }
+.tickets-empty h3 { color: var(--white); font-size: 17px; margin-bottom: 8px; font-weight: 700; }
+.tickets-empty p { font-size: 13px; color: var(--txt-sec); }
+
+.ticket-list-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px;
+  margin: 0 16px 12px;
+  transition: border-color .2s;
+  position: relative;
+}
+.ticket-list-item-body {
+  display: flex; flex: 1; gap: 12px; align-items: flex-start;
+  cursor: pointer;
+}
+.ticket-list-item:hover { border-color: var(--gold); }
+.ticket-list-poster {
+  width: 58px; height: 78px;
+  background: var(--bg-alt); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); flex-shrink: 0;
+  overflow: hidden;
+}
+.ticket-list-poster img { width: 100%; height: 100%; object-fit: cover; }
+.tl-info { flex: 1; }
+.tl-badges { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+.active-badge {
+  background: rgba(76,175,80,.2); color: var(--success);
+  font-size: 10px; font-weight: 700; padding: 2px 7px;
+  border-radius: 5px;
+}
+.tl-format { color: var(--gold); font-size: 10px; font-weight: 600; }
+.tl-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.tl-meta { font-size: 11px; color: var(--txt-sec); margin-bottom: 1px; display: flex; align-items: center; gap: 4px; }
+.tl-meta .ico { width: 12px; height: 12px; }
+.tl-delete {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-alt);
+  color: var(--error);
+  cursor: pointer;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.tl-delete:hover { background: rgba(244,67,54,.15); }
+
+/* E-Ticket Full View */
+#screen-eticket { padding: 0 16px 32px; }
+.eticket-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); overflow: hidden;
+  margin-bottom: 16px;
+}
+.et-top { background: var(--bg-alt); padding: 20px; }
+.et-title { font-size: 22px; font-weight: 800; margin: 8px 0 20px; }
+.et-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.et-lbl { font-size: 10px; color: var(--txt-muted); letter-spacing: 1px; margin-bottom: 4px; }
+.et-val { font-size: 14px; font-weight: 600; }
+.et-seat-box {
+  display: grid; grid-template-columns: 1fr 1fr;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px; gap: 16px;
+}
+.et-seat-val { font-size: 20px; font-weight: 800; color: var(--gold); }
+.et-tear { display: flex; align-items: center; padding: 0; height: 20px; }
+.et-tear-hole { width: 20px; height: 20px; border-radius: 50%; background: var(--bg); flex-shrink: 0; }
+.et-tear-hole.left { margin-left: -10px; }
+.et-tear-hole.right { margin-right: -10px; }
+.et-tear-dots { flex: 1; border-top: 2px dashed var(--border); }
+.et-qr-area {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 20px; background: var(--bg-card);
+}
+.et-qr-outer {
+  width: 160px; height: 160px; background: white;
+  border-radius: var(--radius-md); padding: 12px;
+  margin-bottom: 14px; display: flex; align-items: center; justify-content: center;
+}
+.et-qr-inner {
+  width: 130px; height: 130px; background: var(--bg);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+}
+.et-scan-lbl { font-size: 14px; color: var(--white); margin-bottom: 4px; }
+.et-id { font-size: 12px; color: var(--txt-sec); letter-spacing: 2px; }
+.done-btn {
+  background: var(--gold); color: var(--bg);
+  border-radius: var(--radius-full); padding: 15px;
+  font-weight: 700; font-size: 15px; width: 100%;
+  cursor: pointer; margin-bottom: 10px;
+  transition: background .2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.done-btn:hover { background: var(--gold-light); }
+.download-btn {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-full); padding: 15px;
+  font-weight: 700; font-size: 15px; width: 100%;
+  color: var(--white); cursor: pointer;
+  transition: background .2s;
+  margin-bottom: 10px;
+}
+.download-btn:hover { background: var(--bg-alt); }
+.delete-eticket-btn {
+  background: rgba(244,67,54,.1); border: 1px solid rgba(244,67,54,.4);
+  border-radius: var(--radius-full); padding: 15px;
+  font-weight: 600; font-size: 14px; width: 100%;
+  color: var(--error); cursor: pointer;
+  transition: background .2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.delete-eticket-btn:hover { background: rgba(244,67,54,.2); }
+
+/* ═══════════════════════════════════════════
+   10. PROMO
+═══════════════════════════════════════════ */
+#screen-promo { padding: 0 0 90px; }
+.promo-card-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); overflow: hidden;
+  margin: 0 16px 16px;
+}
+.promo-img-wrap {
+  position: relative;
+  height: 150px;
+}
+.promo-card-img { width: 100%; height: 100%; object-fit: cover; }
+.promo-img-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex; align-items: flex-start;
+  padding: 12px;
+}
+.promo-body-item { padding: 16px; }
+.promo-body-item h3 { font-size: 18px; font-weight: 700; color: var(--gold); margin-bottom: 6px; }
+.promo-body-item p { font-size: 13px; color: var(--txt-sec); line-height: 1.6; margin-bottom: 14px; }
+.code-row { display: flex; align-items: center; gap: 12px; }
+.code-box {
+  flex: 1; background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 12px;
+}
+.code-lbl { font-size: 10px; color: var(--txt-muted); letter-spacing: 1px; margin-bottom: 2px; }
+.code-val { font-size: 14px; font-weight: 700; letter-spacing: 1px; }
+.copy-btn {
+  background: var(--gold); color: var(--bg);
+  border-radius: var(--radius-md); padding: 10px 14px;
+  font-weight: 700; font-size: 12px; cursor: pointer;
+  transition: background .2s; white-space: nowrap;
+  flex-shrink: 0;
+}
+.copy-btn.copied { background: var(--success); color: white; }
+.copy-btn:hover { background: var(--gold-light); }
+
+/* ═══════════════════════════════════════════
+   11. PROFILE
+═══════════════════════════════════════════ */
+#screen-profile { padding: 0 0 90px; }
+.profile-topbar {
+  display: flex; align-items: center; justify-content: center;
+  padding: 52px 16px 14px;
+}
+.profile-avatar-section { text-align: center; padding: 10px 0 24px; }
+.avatar-wrap { position: relative; display: inline-block; margin-bottom: 12px; }
+.avatar-img {
+  width: 96px; height: 96px; border-radius: 50%;
+  border: 3px solid var(--gold);
+  background: var(--bg-alt);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold);
+  overflow: hidden;
+}
+.pro-badge {
+  position: absolute; bottom: -2px; right: -2px;
+  background: var(--gold); color: var(--bg);
+  font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: var(--radius-full);
+}
+.profile-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.profile-tier { color: var(--gold); font-size: 13px; font-weight: 600; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.points-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 16px;
+  margin: 0 16px 20px;
+}
+.points-lbl { font-size: 10px; color: var(--txt-muted); letter-spacing: 2px; margin-bottom: 6px; }
+.points-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 14px; }
+.points-val { font-size: 32px; font-weight: 800; color: var(--gold); }
+.points-unit { font-size: 14px; color: var(--txt-sec); flex: 1; }
+.redeem-btn {
+  background: var(--gold); color: var(--bg);
+  border-radius: var(--radius-full); padding: 8px 16px;
+  font-weight: 700; font-size: 13px; cursor: pointer;
+  transition: background .2s;
+}
+.redeem-btn:hover { background: var(--gold-light); }
+.points-meta {
+  display: grid; grid-template-columns: 1fr 1px 1fr;
+  border-top: 1px solid var(--border); padding-top: 14px;
+}
+.pm-divider { background: var(--border); }
+.pm-col { padding: 0 12px; }
+.pm-col:first-child { padding-left: 0; }
+.pm-lbl { font-size: 10px; color: var(--txt-muted); letter-spacing: 1px; margin-bottom: 4px; }
+.pm-val { font-size: 12px; font-weight: 600; color: var(--white); }
+.menu-section-lbl {
+  font-size: 10px; color: var(--txt-muted); letter-spacing: 2px;
+  padding: 0 16px; margin-bottom: 12px;
+}
+.menu-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 15px 16px;
+  margin: 0 16px 8px; cursor: pointer;
+  transition: border-color .2s;
+  width: calc(100% - 32px);
+  text-align: left;
+  color: var(--white);
+}
+.menu-item:hover { border-color: var(--gold); }
+.menu-item .mico { color: var(--gold); width: 22px; flex-shrink: 0; }
+.menu-item .mlbl { flex: 1; font-size: 15px; font-weight: 500; }
+.menu-item .marrow { color: var(--txt-sec); }
+.logout-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 15px;
+  margin: 0 16px 10px; cursor: pointer;
+  color: var(--error); font-size: 15px; font-weight: 600;
+  transition: background .2s;
+  width: calc(100% - 32px);
+}
+.logout-btn:hover { background: rgba(244,67,54,.1); }
+.version-txt { text-align: center; font-size: 11px; color: var(--txt-muted); padding: 10px 0; }
+
+/* ═══════════════════════════════════════════
+   MODAL CONFIRM
+═══════════════════════════════════════════ */
+.modal-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 1000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn .2s;
+}
+.modal-backdrop.visible { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px; width: 100%; max-width: 360px;
+  animation: slideDown .25s ease;
+}
+.modal-icon-wrap {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: rgba(244,67,54,.15);
+  color: var(--error);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.modal h3 { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+.modal p { font-size: 13px; color: var(--txt-sec); text-align: center; margin-bottom: 20px; line-height: 1.5; }
+.modal-actions { display: flex; gap: 10px; }
+.modal-btn-cancel {
+  flex: 1;
+  background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: var(--radius-full); padding: 12px;
+  color: var(--white); font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: background .2s;
+}
+.modal-btn-cancel:hover { background: var(--border); }
+.modal-btn-confirm {
+  flex: 1;
+  background: var(--error); color: white;
+  border-radius: var(--radius-full); padding: 12px;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: filter .2s;
+}
+.modal-btn-confirm:hover { filter: brightness(1.1); }
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toast {
+  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+  background: var(--bg-card); border: 1px solid var(--gold);
+  color: var(--white); padding: 10px 20px;
+  border-radius: var(--radius-full); font-size: 13px; font-weight: 600;
+  z-index: 9999; opacity: 0; pointer-events: none;
+  transition: opacity .3s; white-space: nowrap;
+}
+#toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ ICONS DEFINITIONS (SVG sprite) ═══════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- back -->
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <!-- pin -->
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+    <!-- chevron-down -->
+    <symbol id="i-chev-dn" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <!-- bell -->
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 10-12 0v5l-2 2h16z"/><path d="M10 20a2 2 0 004 0"/></symbol>
+    <!-- search -->
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+    <!-- close X -->
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></symbol>
+    <!-- check -->
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+    <!-- eye -->
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <!-- play -->
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M7 5v14l12-7z"/></symbol>
+    <!-- ticket -->
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M2 9a2 2 0 012-2h16a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 000-4V9z"/><path d="M13 5v2M13 11v2M13 17v2"/></symbol>
+    <!-- tag (promo) -->
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 11.5V4h-7.5L4 12.5l7.5 7.5L20 11.5z"/><circle cx="9" cy="9" r="1.4" fill="currentColor"/></symbol>
+    <!-- user (profile) -->
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0116 0"/></symbol>
+    <!-- film (home) -->
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></symbol>
+    <!-- star -->
+    <symbol id="i-star" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.1 6.5 7 .9-5.1 4.9 1.3 7-6.3-3.6L5.7 21.3l1.3-7L1.9 9.4l7-.9L12 2z"/></symbol>
+    <!-- clock -->
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <!-- calendar -->
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></symbol>
+    <!-- chair (seat) -->
+    <symbol id="i-chair" viewBox="0 0 24 24"><path d="M5 10V6a2 2 0 012-2h10a2 2 0 012 2v4"/><path d="M4 10h16v6H4z"/><path d="M6 16v3M18 16v3"/></symbol>
+    <!-- credit card -->
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 11h20"/></symbol>
+    <!-- shield (pay) -->
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 4v5c0 5-3.5 9-8 11-4.5-2-8-6-8-11V6l8-4z"/></symbol>
+    <!-- info -->
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></symbol>
+    <!-- share -->
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 4v12M6 10l6-6 6 6"/><path d="M4 20h16"/></symbol>
+    <!-- trash -->
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13"/></symbol>
+    <!-- logout -->
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h-4a3 3 0 00-3 3v10a3 3 0 003 3h4M10 12h11M18 8l4 4-4 4"/></symbol>
+    <!-- history -->
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9c-2.5 0-4.7 1-6.4 2.6L3 8"/><path d="M3 4v4h4M12 8v5l3 2"/></symbol>
+    <!-- help -->
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 4M12 17h.01"/></symbol>
+    <!-- bank -->
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9l9-6 9 6M5 9v9M9 9v9M15 9v9M19 9v9M3 21h18"/></symbol>
+    <!-- qr -->
+    <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M20 14v3M14 20h3M20 20h.01"/></symbol>
+    <!-- wallet -->
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M16 13h2"/></symbol>
+    <!-- gift -->
+    <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 12h18M12 8v13M9 8a2 2 0 010-4c1.5 0 3 2 3 4M15 8a2 2 0 000-4c-1.5 0-3 2-3 4"/></symbol>
+    <!-- popcorn -->
+    <symbol id="i-popcorn" viewBox="0 0 24 24"><path d="M5 10l1 11h12l1-11"/><path d="M5 10a2 2 0 010-4 2 2 0 014 0 2 2 0 014 0 2 2 0 014 0 2 2 0 010 4z"/></symbol>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- ═══════════════════ TOAST & MODAL ═══════════════════ -->
+  <div id="toast"></div>
+
+  <!-- Confirm modal (generic) -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="modal">
+      <div class="modal-icon-wrap">
+        <svg class="ico ico-lg"><use href="#i-trash"/></svg>
+      </div>
+      <h3 id="modal-title">Hapus tiket?</h3>
+      <p id="modal-message">Tiket yang dihapus tidak bisa dikembalikan.</p>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" onclick="closeModal()">Batal</button>
+        <button class="modal-btn-confirm" id="modal-confirm-btn">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification panel -->
+  <div class="notif-backdrop" id="notif-backdrop" onclick="toggleNotif(false)"></div>
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-header">
+      <h3>Notifikasi</h3>
+      <span class="notif-clear" onclick="clearNotifs()">Tandai dibaca</span>
+    </div>
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 1: ONBOARDING
+  ═══════════════════════════════════════════ -->
+  <div id="screen-onboarding" class="screen active">
+    <div class="ob-logo"><span class="logo-text">MOVIX</span></div>
+    <!-- Slide 1 -->
+    <div class="onboarding-slide active" id="ob-slide-0">
+      <div class="onboarding-img-wrap">
+        <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80" alt="">
+      </div>
+      <div class="onboarding-bottom">
+        <h2>Nikmati Pengalaman<br>Menonton Terbaik</h2>
+        <p>Pesan tiket film favorit Anda hanya<br>dalam hitungan detik.</p>
+        <div class="ob-dots">
+          <div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+        </div>
+        <div class="ob-actions">
+          <button class="gold-btn" onclick="obNext()">Mulai →</button>
+          <button class="ob-skip" onclick="goTab('login')">LEWATI</button>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 2 -->
+    <div class="onboarding-slide" id="ob-slide-1">
+      <div class="onboarding-img-wrap">
+        <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800&q=80" alt="">
+      </div>
+      <div class="onboarding-bottom">
+        <h2>Pilih Kursi<br>Favorit Anda</h2>
+        <p>Pilih posisi terbaik dengan tampilan<br>denah kursi interaktif.</p>
+        <div class="ob-dots">
+          <div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div>
+        </div>
+        <div class="ob-actions">
+          <button class="gold-btn" onclick="obNext()">Lanjut →</button>
+          <button class="ob-skip" onclick="goTab('login')">LEWATI</button>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 3 -->
+    <div class="onboarding-slide" id="ob-slide-2">
+      <div class="onboarding-img-wrap">
+        <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80" alt="">
+      </div>
+      <div class="onboarding-bottom">
+        <h2>Bayar Mudah<br>& Aman</h2>
+        <p>GoPay, OVO, Dana, QRIS dan banyak<br>metode pembayaran lainnya.</p>
+        <div class="ob-dots">
+          <div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div>
+        </div>
+        <div class="ob-actions">
+          <button class="gold-btn" onclick="goTab('login')">Mulai Sekarang →</button>
+          <button class="ob-skip" onclick="goTab('login')">LEWATI</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 2: LOGIN
+  ═══════════════════════════════════════════ -->
+  <div id="screen-login" class="screen">
+    <div class="login-header">
+      <span class="logo-text">MOVIX</span>
+      <span>THE PREMIERE EXPERIENCE</span>
+    </div>
+    <div class="card login-card">
+      <h2>Selamat Datang</h2>
+      <p class="sub">Silakan masuk ke akun Anda.</p>
+      <div class="form-label">Email</div>
+      <div class="input-wrap">
+        <span class="iico">✉</span>
+        <input type="email" id="login-email" placeholder="nama@email.com">
+      </div>
+      <div class="form-label">
+        Password
+        <span class="forgot">Lupa?</span>
+      </div>
+      <div class="input-wrap">
+        <span class="iico">🔒</span>
+        <input type="password" id="login-pass" placeholder="••••••••">
+        <button class="eye-btn" onclick="togglePass()">👁</button>
+      </div>
+      <button class="gold-btn" onclick="doLogin()">Login</button>
+      <div class="or-divider">Atau login dengan</div>
+      <div class="social-row">
+        <button class="social-btn" onclick="doLogin()">G</button>
+        <button class="social-btn" onclick="doLogin()">🍎</button>
+      </div>
+    </div>
+    <div class="register-row">Belum punya akun? <span onclick="showToast('Fitur daftar segera hadir! 🎬')">Daftar</span></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 3: HOME
+  ═══════════════════════════════════════════ -->
+  <div id="screen-home" class="screen">
+    <div class="home-topbar">
+      <!-- Location dropdown -->
+      <div class="loc-wrap">
+        <button class="loc-btn" onclick="toggleLocDropdown(event)">
+          <svg class="ico ico-sm"><use href="#i-pin"/></svg>
+          <span id="loc-current">Jakarta</span>
+          <svg class="ico ico-sm"><use href="#i-chev-dn"/></svg>
+        </button>
+        <div class="loc-dropdown" id="loc-dropdown">
+          <!-- filled by JS -->
+        </div>
+      </div>
+      <span class="logo-text">MOVIX</span>
+      <!-- Notification bell -->
+      <button class="icon-btn bell-wrap" onclick="toggleNotif(true)" aria-label="Notifikasi">
+        <svg class="ico ico-sm"><use href="#i-bell"/></svg>
+        <span class="bell-badge" id="bell-badge"></span>
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar" onclick="goTab('search')">
+      <svg class="ico ico-sm"><use href="#i-search"/></svg>
+      <input type="text" placeholder="Search movies, cinemas..." readonly>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero-banner" onclick="openMovie('1')">
+      <img class="hero-img" src="https://image.tmdb.org/t/p/w1280/cNLAh3GzTZBHqcaNMiVnTTXwYCc.jpg" alt="">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="badge-gold">TRENDING NOW</span>
+        <h2 id="hero-title">Mission: Impossible – Ghost Protocol</h2>
+        <div class="hero-btns">
+          <button class="hero-book-btn" onclick="event.stopPropagation(); openSeat('1')">Book Now</button>
+          <button class="hero-trailer-btn" onclick="event.stopPropagation(); showToast('Memuat trailer... 🎬')">
+            <svg class="ico ico-sm" style="width:11px;height:11px;"><use href="#i-play"/></svg> Trailer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Now Showing -->
+    <div style="padding: 0 16px;">
+      <div class="section-title">Now Showing</div>
+    </div>
+    <div class="movies-row scroll-x" id="now-showing-row"></div>
+
+    <!-- Coming Soon -->
+    <div style="padding: 18px 16px 0;">
+      <div class="section-title">Coming Soon</div>
+    </div>
+    <div class="movies-row scroll-x" id="coming-soon-row"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 4: SEARCH
+  ═══════════════════════════════════════════ -->
+  <div id="screen-search" class="screen">
+    <div class="topbar">
+      <div class="topbar-spacer"></div>
+      <span class="logo-text">MOVIX</span>
+      <button class="icon-btn bell-wrap" onclick="toggleNotif(true)" aria-label="Notifikasi">
+        <svg class="ico ico-sm"><use href="#i-bell"/></svg>
+        <span class="bell-badge" id="bell-badge-2"></span>
+      </button>
+    </div>
+    <div class="search-page-bar">
+      <svg class="ico ico-sm"><use href="#i-search"/></svg>
+      <input type="text" id="search-input" placeholder="Cari film, bioskop..." oninput="filterMovies(this.value)">
+      <button class="clear-btn" onclick="clearSearch()" id="search-clear">
+        <svg class="ico" style="width:12px;height:12px;"><use href="#i-x"/></svg>
+      </button>
+    </div>
+
+    <!-- Genre filter (moved here from Home) -->
+    <div class="search-genre-section">
+      <div class="search-genre-label">FILTER GENRE</div>
+      <div class="scroll-x" id="search-genre-row" style="padding: 0 16px;"></div>
+    </div>
+
+    <div id="recent-section" class="recent-section">
+      <div class="recent-header">
+        <span class="section-title" style="font-size:16px;margin-bottom:0;">Pencarian Terakhir</span>
+        <button class="clear-all" onclick="clearRecent()">HAPUS SEMUA</button>
+      </div>
+      <div class="recent-chips" id="recent-chips"></div>
+    </div>
+    <div style="padding: 0 16px 12px;">
+      <div class="section-title" id="search-results-title">Film Populer</div>
+    </div>
+    <div class="movies-grid" id="movies-grid"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 5: MOVIE DETAIL
+  ═══════════════════════════════════════════ -->
+  <div id="screen-detail" class="screen">
+    <div class="detail-backdrop-wrap">
+      <img id="detail-img" class="detail-backdrop" src="" alt="">
+      <div class="detail-overlay"></div>
+      <div class="detail-nav">
+        <button class="icon-btn icon-btn-plain" onclick="goBack()" aria-label="Back">
+          <svg class="ico ico-sm"><use href="#i-back"/></svg>
+        </button>
+        <button class="icon-btn icon-btn-plain" onclick="showToast('Link disalin! 📋')" aria-label="Share">
+          <svg class="ico ico-sm"><use href="#i-share"/></svg>
+        </button>
+      </div>
+      <div class="detail-play">
+        <button class="play-btn" onclick="showToast('Memuat trailer... 🎬')" aria-label="Play trailer">
+          <svg class="ico ico-lg" style="padding-left:3px;"><use href="#i-play"/></svg>
+        </button>
+        <span class="trailer-lbl">TRAILER</span>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-formats" id="detail-formats"></div>
+      <h1 class="detail-title" id="detail-title"></h1>
+      <div class="detail-meta" id="detail-meta"></div>
+      <div class="tags-row" id="detail-tags"></div>
+      <div class="synopsis-title">Synopsis</div>
+      <p class="synopsis-txt" id="detail-synopsis"></p>
+      <div class="info-card">
+        <div class="info-col">
+          <div class="info-lbl">DIRECTOR</div>
+          <div class="info-val" id="detail-director"></div>
+        </div>
+        <div class="info-card-divider"></div>
+        <div class="info-col">
+          <div class="info-lbl">RATING</div>
+          <div class="info-val" id="detail-rating"></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div>
+        <div class="price-lbl" id="detail-price-lbl">Harga mulai dari</div>
+        <div class="price-val" id="detail-price"></div>
+      </div>
+      <button class="book-btn" id="detail-book-btn">Pesan Tiket</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 6: SEAT PICKER
+  ═══════════════════════════════════════════ -->
+  <div id="screen-seat" class="screen">
+    <div class="seat-header">
+      <button class="icon-btn" onclick="goBack()" aria-label="Back">
+        <svg class="ico ico-sm"><use href="#i-back"/></svg>
+      </button>
+      <div class="seat-header-info">
+        <h3 id="seat-movie-title"></h3>
+        <p id="seat-cinema-name">GRAND INDONESIA</p>
+      </div>
+      <button class="icon-btn icon-btn-gold" onclick="showToast('Info tempat duduk ℹ')" aria-label="Info">
+        <svg class="ico ico-sm"><use href="#i-info"/></svg>
+      </button>
+    </div>
+
+    <div class="seat-section-lbl">
+      <svg class="ico"><use href="#i-calendar"/></svg> PILIH TANGGAL
+    </div>
+    <div class="date-scroll scroll-x" id="date-btns"></div>
+    <div class="seat-section-lbl">
+      <svg class="ico"><use href="#i-clock"/></svg> PILIH JAM TAYANG
+    </div>
+    <div class="time-scroll scroll-x" id="time-btns"></div>
+
+    <div class="screen-line"><span class="screen-lbl">CINEMA SCREEN</span></div>
+    <div class="seat-grid" id="seat-grid"></div>
+
+    <div class="seat-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#2A3550;"></div> Available</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold);"></div> Selected</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1E2A3A;opacity:.6"></div> Occupied</div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-card-lbl">
+          <svg class="ico" style="width:13px;height:13px;"><use href="#i-ticket"/></svg> SEATS
+        </div>
+        <div class="summary-card-val" id="seat-summary">-</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-lbl">
+          <svg class="ico" style="width:13px;height:13px;"><use href="#i-film"/></svg> CINEMA
+        </div>
+        <div class="summary-card-val">Studio 1</div>
+      </div>
+    </div>
+
+    <div style="height:20px;"></div>
+
+    <div class="bottom-bar">
+      <div>
+        <div style="font-size:12px;color:var(--txt-sec);">Total Price</div>
+        <div style="font-size:18px;font-weight:800;color:var(--gold);" id="seat-total">Rp 0</div>
+      </div>
+      <button class="book-btn" id="seat-pay-btn" disabled onclick="gotoPayment()">Bayar Sekarang</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 7: PAYMENT
+  ═══════════════════════════════════════════ -->
+  <div id="screen-payment" class="screen">
+    <div class="topbar">
+      <button class="icon-btn" onclick="goBack()" aria-label="Back">
+        <svg class="ico ico-sm"><use href="#i-back"/></svg>
+      </button>
+      <div class="topbar-center" style="color:var(--gold);font-size:16px;font-weight:600;">Pembayaran</div>
+      <div class="icon-btn" style="background:var(--bg-alt);border-color:var(--gold);color:var(--gold);font-weight:700;">A</div>
+    </div>
+
+    <div class="timer-card">
+      <svg class="ico timer-icon"><use href="#i-clock"/></svg>
+      <div>
+        <div class="timer-lbl">Selesaikan pembayaran dalam</div>
+        <div class="timer-val" id="pay-timer">14:53</div>
+      </div>
+    </div>
+
+    <div class="pay-section-lbl">RINGKASAN PESANAN</div>
+    <div class="order-card">
+      <div class="order-poster" id="pay-poster-wrap">
+        <img id="pay-poster" src="" alt="" style="width:68px;height:88px;object-fit:cover;border-radius:var(--radius-sm);display:block;">
+      </div>
+      <div class="order-info">
+        <h4 id="pay-movie-title"></h4>
+        <p class="cinema">Grand Indonesia, Studio 01</p>
+        <p class="order-meta">
+          <svg class="ico"><use href="#i-calendar"/></svg>
+          <span id="pay-date-time"></span>
+        </p>
+        <p class="order-meta">
+          <svg class="ico"><use href="#i-chair"/></svg>
+          <span id="pay-seats"></span>
+        </p>
+      </div>
+    </div>
+
+    <div class="pay-section-lbl">METODE PEMBAYARAN</div>
+    <div class="sub-lbl">E-Wallet</div>
+    <div class="ewallet-row">
+      <button class="ewallet-btn" onclick="selectPayMethod('gopay',this)"><span>💚</span>GoPay</button>
+      <button class="ewallet-btn" onclick="selectPayMethod('ovo',this)"><span>💜</span>OVO</button>
+      <button class="ewallet-btn" onclick="selectPayMethod('dana',this)"><span>💙</span>Dana</button>
+    </div>
+    <div class="sub-lbl">Metode Lainnya</div>
+    <div class="other-methods">
+      <button class="method-row" onclick="selectPayMethod('qris',this)">
+        <svg class="ico mico"><use href="#i-qr"/></svg>
+        <span class="mlbl">QRIS</span>
+        <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+      </button>
+      <button class="method-row" onclick="selectPayMethod('transfer',this)">
+        <svg class="ico mico"><use href="#i-bank"/></svg>
+        <span class="mlbl">Transfer Bank</span>
+        <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+      </button>
+      <button class="method-row" onclick="selectPayMethod('card',this)">
+        <svg class="ico mico"><use href="#i-card"/></svg>
+        <span class="mlbl">Kartu Kredit/Debit</span>
+        <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+      </button>
+    </div>
+
+    <div class="pay-section-lbl">DETAIL PEMBAYARAN</div>
+    <div class="detail-card">
+      <div class="detail-row"><span class="dlbl" id="pay-ticket-count">Tiket (2x)</span><span class="dval" id="pay-subtotal">Rp 100.000</span></div>
+      <div class="detail-row"><span class="dlbl">Biaya Layanan</span><span class="dval">Rp 4.000</span></div>
+      <div class="detail-divider"></div>
+      <div class="detail-row total"><span class="dlbl">Total Bayar</span><span class="dval" id="pay-total">Rp 104.000</span></div>
+    </div>
+
+    <div class="pay-bottom">
+      <button class="pay-btn" id="pay-now-btn" disabled onclick="doPayment()">
+        <svg class="ico ico-sm"><use href="#i-shield"/></svg> Bayar Sekarang
+      </button>
+      <p class="terms-txt">Dengan membayar, Anda menyetujui Syarat & Ketentuan kami.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 8: PAYMENT SUCCESS
+  ═══════════════════════════════════════════ -->
+  <div id="screen-success" class="screen">
+    <div class="success-header">
+      <button class="icon-btn" onclick="goTab('home')" aria-label="Close">
+        <svg class="ico ico-sm"><use href="#i-x"/></svg>
+      </button>
+      <span class="logo-text">MOVIX</span>
+      <div class="topbar-spacer"></div>
+    </div>
+    <div class="success-icon-wrap">
+      <div class="success-circle">
+        <svg class="ico ico-lg" style="width:36px;height:36px;"><use href="#i-check"/></svg>
+      </div>
+    </div>
+    <h2 class="success-title">Payment Successful</h2>
+    <p class="success-sub">Your premiere experience is confirmed.</p>
+    <div class="ticket-card">
+      <div class="ticket-top">
+        <img id="success-poster" src="" alt=""
+          style="width:80px;height:100px;border-radius:var(--radius-sm);flex-shrink:0;display:block;object-fit:cover;">
+        <div class="ticket-info">
+          <span class="confirmed-badge">CONFIRMED</span>
+          <h3 id="success-movie"></h3>
+          <p class="tdate">
+            <svg class="ico" style="width:14px;height:14px;"><use href="#i-calendar"/></svg>
+            <span id="success-date"></span>
+          </p>
+        </div>
+      </div>
+      <div style="padding:0 12px;"><div class="tear-line"><div class="tear-line-inner"></div></div></div>
+      <div class="ticket-bottom">
+        <div class="ticket-detail-col">
+          <div class="tdlbl">SEATS</div>
+          <div class="tdval txt-gold" id="success-seats"></div>
+        </div>
+        <div class="ticket-detail-col">
+          <div class="tdlbl">CINEMA</div>
+          <div class="tdval cinema-name">Grand Lounge 4</div>
+        </div>
+      </div>
+      <div class="booking-row">
+        <div class="qr-placeholder"><svg class="ico ico-lg"><use href="#i-qr"/></svg></div>
+        <div class="booking-info">
+          <div class="booking-lbl">Booking ID</div>
+          <div class="booking-id" id="success-booking-id">#MVX-000000</div>
+        </div>
+        <svg class="ico" style="color:var(--txt-sec)"><use href="#i-info"/></svg>
+      </div>
+    </div>
+    <button class="view-ticket-btn" onclick="goTab('tickets')">
+      <svg class="ico ico-sm"><use href="#i-ticket"/></svg> View E-Ticket
+    </button>
+    <button class="return-home-btn" onclick="goTab('home')">Return to Home</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 9: TICKETS
+  ═══════════════════════════════════════════ -->
+  <div id="screen-tickets" class="screen">
+    <div class="topbar">
+      <div class="topbar-spacer"></div>
+      <span class="logo-text">MOVIX</span>
+      <button class="icon-btn bell-wrap" onclick="toggleNotif(true)" aria-label="Notifikasi">
+        <svg class="ico ico-sm"><use href="#i-bell"/></svg>
+        <span class="bell-badge" id="bell-badge-3"></span>
+      </button>
+    </div>
+    <div style="padding: 0 16px 16px;">
+      <div class="section-title" style="font-size:22px;">Tiket Saya</div>
+    </div>
+    <div id="ticket-list"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 10: E-TICKET
+  ═══════════════════════════════════════════ -->
+  <div id="screen-eticket" class="screen">
+    <div class="topbar">
+      <button class="icon-btn" onclick="goBack()" aria-label="Back">
+        <svg class="ico ico-sm"><use href="#i-back"/></svg>
+      </button>
+      <div class="topbar-center" style="font-size:16px;font-weight:700;">E-Ticket</div>
+      <div class="topbar-spacer"></div>
+    </div>
+    <div class="eticket-card">
+      <div class="et-top">
+        <span class="badge-gold" id="et-format">IMAX 2D</span>
+        <h2 class="et-title" id="et-title">Interstellar: Reborn</h2>
+        <div class="et-grid">
+          <div><div class="et-lbl">DATE</div><div class="et-val" id="et-date">24 Oct 2023</div></div>
+          <div><div class="et-lbl">TIME</div><div class="et-val" id="et-time">19:45 PM</div></div>
+          <div><div class="et-lbl">CINEMA</div><div class="et-val" id="et-cinema">Grand Premiere Hall</div></div>
+          <div><div class="et-lbl">STUDIO</div><div class="et-val txt-gold" id="et-studio">Studio 01</div></div>
+        </div>
+        <div class="et-seat-box">
+          <div><div class="et-lbl">SEATS</div><div class="et-seat-val" id="et-seats">H12, H13</div></div>
+          <div><div class="et-lbl">ROW</div><div class="et-val" id="et-row">Row H</div></div>
+        </div>
+      </div>
+      <div class="et-tear">
+        <div class="et-tear-hole left"></div>
+        <div class="et-tear-dots"></div>
+        <div class="et-tear-hole right"></div>
+      </div>
+      <div class="et-qr-area">
+        <div class="et-qr-outer"><div class="et-qr-inner"><svg class="ico" style="width:80px;height:80px;color:var(--white)"><use href="#i-qr"/></svg></div></div>
+        <p class="et-scan-lbl">Scan this at the gate</p>
+        <p class="et-id" id="et-id">ID: MVX-8829-9102</p>
+      </div>
+    </div>
+    <button class="done-btn" onclick="goBack()">
+      Selesai <svg class="ico ico-sm"><use href="#i-check"/></svg>
+    </button>
+    <button class="download-btn" onclick="showToast('Tiket diunduh! 📥')">Download Image</button>
+    <button class="delete-eticket-btn" id="delete-eticket-btn">
+      <svg class="ico ico-sm"><use href="#i-trash"/></svg> Hapus E-Ticket
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 11: PROMO
+  ═══════════════════════════════════════════ -->
+  <div id="screen-promo" class="screen">
+    <div class="topbar">
+      <div class="topbar-spacer"></div>
+      <span class="logo-text">MOVIX</span>
+      <button class="icon-btn bell-wrap" onclick="toggleNotif(true)" aria-label="Notifikasi">
+        <svg class="ico ico-sm"><use href="#i-bell"/></svg>
+        <span class="bell-badge" id="bell-badge-4"></span>
+      </button>
+    </div>
+    <div style="padding: 0 16px 16px;">
+      <div class="section-title" style="font-size:22px;">Promo Menarik</div>
+      <p style="font-size:13px;color:var(--txt-sec);margin-bottom:16px;">Gunakan kode promo untuk pengalaman menonton yang lebih hemat</p>
+      <div class="scroll-x" style="gap:8px;padding-bottom:4px;">
+        <button class="genre-chip active">Semua</button>
+        <button class="genre-chip">Tiket</button>
+        <button class="genre-chip">Food & Drink</button>
+        <button class="genre-chip">Member</button>
+      </div>
+    </div>
+    <div id="promo-list"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 12: PROFILE (no top bar buttons)
+  ═══════════════════════════════════════════ -->
+  <div id="screen-profile" class="screen">
+    <div class="profile-topbar">
+      <span class="logo-text">MOVIX</span>
+    </div>
+    <div class="profile-avatar-section">
+      <div class="avatar-wrap">
+        <div class="avatar-img"><svg class="ico ico-lg"><use href="#i-user"/></svg></div>
+        <span class="pro-badge">PRO</span>
+      </div>
+      <div class="profile-name">Adrian Wijaya</div>
+      <div class="profile-tier">
+        <svg class="ico" style="width:14px;height:14px;"><use href="#i-star"/></svg>
+        GOLD MEMBER
+      </div>
+    </div>
+    <div class="points-card">
+      <div class="points-lbl">TOTAL MOVIX POINTS</div>
+      <div class="points-row">
+        <span class="points-val">12,450</span>
+        <span class="points-unit"> pts</span>
+        <button class="redeem-btn" onclick="showToast('Menukar poin... 🎁')">Redeem</button>
+      </div>
+      <div class="points-meta">
+        <div class="pm-col">
+          <div class="pm-lbl">EXPIRING SOON</div>
+          <div class="pm-val">450 pts (Oct 2024)</div>
+        </div>
+        <div class="pm-divider"></div>
+        <div class="pm-col" style="padding-left:16px;">
+          <div class="pm-lbl">TIER STATUS</div>
+          <div class="pm-val">2,550 to Platinum</div>
+        </div>
+      </div>
+    </div>
+    <div class="menu-section-lbl">AKUN SAYA</div>
+    <button class="menu-item" onclick="showToast('Membuka informasi akun...')">
+      <svg class="ico mico"><use href="#i-user"/></svg>
+      <span class="mlbl">Informasi Akun</span>
+      <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+    </button>
+    <button class="menu-item" onclick="showToast('Membuka riwayat transaksi...')">
+      <svg class="ico mico"><use href="#i-history"/></svg>
+      <span class="mlbl">Riwayat Transaksi</span>
+      <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+    </button>
+    <button class="menu-item" onclick="showToast('Membuka metode pembayaran...')">
+      <svg class="ico mico"><use href="#i-wallet"/></svg>
+      <span class="mlbl">Metode Pembayaran</span>
+      <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+    </button>
+    <button class="menu-item" onclick="showToast('Membuka pusat bantuan...')">
+      <svg class="ico mico"><use href="#i-help"/></svg>
+      <span class="mlbl">Pusat Bantuan</span>
+      <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
+    </button>
+    <div style="height:16px;"></div>
+    <button class="logout-btn" onclick="doLogout()">
+      <svg class="ico ico-sm"><use href="#i-logout"/></svg> Keluar
+    </button>
+    <p class="version-txt">MOVIX v2.4.0 • Made with Passion</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       BOTTOM NAV — uniform SVG icons, one color
+  ═══════════════════════════════════════════ -->
+  <div id="bottom-nav">
+    <div class="nav-items">
+      <button class="nav-item active" id="nav-home" onclick="goTab('home')">
+        <svg class="ico"><use href="#i-film"/></svg>Home
+      </button>
+      <button class="nav-item" id="nav-search" onclick="goTab('search')">
+        <svg class="ico"><use href="#i-search"/></svg>Search
+      </button>
+      <button class="nav-item" id="nav-tickets" onclick="goTab('tickets')">
+        <svg class="ico"><use href="#i-ticket"/></svg>Tickets
+      </button>
+      <button class="nav-item" id="nav-promo" onclick="goTab('promo')">
+        <svg class="ico"><use href="#i-tag"/></svg>Promo
+      </button>
+      <button class="nav-item" id="nav-profile" onclick="goTab('profile')">
+        <svg class="ico"><use href="#i-user"/></svg>Profile
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════════════
+const movies = [
+  // ── NOW SHOWING ──────────────────────────────────────────────────────────
+  { id:'1',
+    title:'Mission: Impossible – Ghost Protocol',
+    genre:['Action','Thriller'],
+    rating:7.4, votes:'335k', duration:'2j 13m', director:'Brad Bird',
+    format:['IMAX','Regular'],
+    tags:['Spy','Aksi','Thriller'],
+    poster:'https://picsum.photos/seed/mi4ghost/400/600',
+    backdrop:'https://picsum.photos/seed/mi4ghost-bg/800/500',
+    synopsis:'Agen IMF Ethan Hunt bersama tim barunya terpaksa beroperasi sendiri setelah seluruh divisi IMF dibubarkan. Tersudut sebagai tersangka pengeboman Kremlin, Ethan harus membuktikan innocence-nya sekaligus menghentikan ancaman nuklir global.',
+    priceFrom:50000 },
+
+  { id:'2',
+    title:'Demon Slayer: Infinity Castle',
+    genre:['Anime','Action'],
+    rating:8.4, votes:'95k', duration:'2j 35m', director:'Haruo Sotozaki',
+    format:['IMAX','Regular','4DX'],
+    tags:['Anime','Pertarungan','Supernatural'],
+    poster:'https://picsum.photos/seed/demonslayer2025/400/600',
+    backdrop:'https://picsum.photos/seed/demonslayer2025-bg/800/500',
+    synopsis:'Korps Pembasmi Iblis terseret ke Infinity Castle, di mana Tanjiro, Nezuko, dan para Hashira menghadapi pertarungan maut melawan Upper Rank Demons dalam pertempuran final melawan Muzan Kibutsuji.',
+    priceFrom:65000 },
+
+  { id:'3',
+    title:'Dilan 1990',
+    genre:['Romance','Drama'],
+    rating:7.1, votes:'4.2k', duration:'1j 50m', director:'Fajar Bustomi',
+    format:['Regular'],
+    tags:['Romansa','Indonesia','Remaja'],
+    poster:'https://picsum.photos/seed/dilan1990film/400/600',
+    backdrop:'https://picsum.photos/seed/dilan1990film-bg/800/500',
+    synopsis:'Milea pindah dari Jakarta ke Bandung dan bertemu Dilan — sosok lelaki unik, puitis, penuh kejutan. Di antara gang motor, buku puisi, dan teka-teki kata-kata, cinta pertama tumbuh perlahan namun begitu dalam.',
+    priceFrom:40000 },
+
+  { id:'4',
+    title:'Agak Laen',
+    genre:['Comedy','Horror'],
+    rating:7.6, votes:'8.9k', duration:'1j 59m', director:'Muhadkly Acho',
+    format:['Regular'],
+    tags:['Komedi','Indonesia','Horor'],
+    poster:'https://picsum.photos/seed/agaklaen2024/400/600',
+    backdrop:'https://picsum.photos/seed/agaklaen2024-bg/800/500',
+    synopsis:'Empat sekawan — Boris, Jegel, Bene, dan Oki — bekerja sebagai penjaga wahana rumah hantu di pasar malam. Masalah datang ketika wahana mereka yang tidak seram tiba-tiba viral karena ada pengunjung yang benar-benar meninggal.',
+    priceFrom:45000 },
+
+  { id:'5',
+    title:'The Conjuring: Last Rites',
+    genre:['Horror','Thriller'],
+    rating:6.2, votes:'47k', duration:'2j 15m', director:'Michael Chaves',
+    format:['Regular','4DX'],
+    tags:['Horor','Supranatural','Iblis'],
+    poster:'https://picsum.photos/seed/conjuring4lastrits/400/600',
+    backdrop:'https://picsum.photos/seed/conjuring4lastrits-bg/800/500',
+    synopsis:'Investigator paranormal Ed dan Lorraine Warren menghadapi kasus terakhir dan terberat mereka — keluarga Smurl yang dihantui oleh entitas jahat sangat kuat. Pertarungan final antara iman, cinta, dan kegelapan.',
+    priceFrom:55000 },
+
+  { id:'6',
+    title:'Lord of the Rings: Fellowship of the Ring',
+    genre:['Adventure','Fantasy'],
+    rating:8.8, votes:'1.9M', duration:'2j 58m', director:'Peter Jackson',
+    format:['IMAX','Regular'],
+    tags:['Epic','Fantasi','Petualangan'],
+    poster:'https://picsum.photos/seed/lotrfellowship/400/600',
+    backdrop:'https://picsum.photos/seed/lotrfellowship-bg/800/500',
+    synopsis:'Frodo Baggins mewarisi cincin kekuasaan yang paling berbahaya. Bersama Fellowship yang terdiri dari sembilan sahabat, ia memulai perjalanan epik melintasi Middle-earth untuk menghancurkan One Ring sebelum Sauron berkuasa.',
+    priceFrom:60000 },
+
+  // ── COMING SOON ──────────────────────────────────────────────────────────
+  { id:'7',
+    title:'Deadpool & Wolverine',
+    genre:['Comedy','Action'],
+    rating:7.5, votes:'420k', duration:'2j 8m', director:'Shawn Levy',
+    format:['IMAX','Regular','4DX'],
+    tags:['Marvel','Superhero','Komedi'],
+    poster:'https://picsum.photos/seed/deadpoolwolverine24/400/600',
+    backdrop:'https://picsum.photos/seed/deadpoolwolverine24-bg/800/500',
+    synopsis:'Wade Wilson kembali sebagai Deadpool dan dipaksa bergabung dengan MCU bersama Wolverine yang enggan. Ketika alam semesta tempat tinggal Wade terancam musnah, duet paling tidak mungkin ini harus bekerja sama.',
+    priceFrom:70000, comingSoon:true, releaseDate:'26 Jul 2024' },
+
+  { id:'8',
+    title:'Spider-Man: Far From Home',
+    genre:['Action','Sci-Fi'],
+    rating:7.6, votes:'605k', duration:'2j 9m', director:'Jon Watts',
+    format:['IMAX','Regular'],
+    tags:['Marvel','Superhero','Eropa'],
+    poster:'https://picsum.photos/seed/spidermanfarfromhome/400/600',
+    backdrop:'https://picsum.photos/seed/spidermanfarfromhome-bg/800/500',
+    synopsis:'Setelah peristiwa Avengers: Endgame, Peter Parker ikut liburan ke Eropa bersama teman-temannya. Rencananya buyar ketika Nick Fury memintanya menghadapi serangan makhluk elemental misterius bersama pahlawan baru Mysterio.',
+    priceFrom:60000, comingSoon:true, releaseDate:'2 Jul 2024' },
+
+  { id:'9',
+    title:'Backrooms',
+    genre:['Horror','Sci-Fi'],
+    rating:7.2, votes:'28k', duration:'1j 50m', director:'Kane Parsons',
+    format:['Regular','IMAX'],
+    tags:['Horor','Psikologis','Liminal'],
+    poster:'https://picsum.photos/seed/backroomsa24horror/400/600',
+    backdrop:'https://picsum.photos/seed/backroomsa24horror-bg/800/500',
+    synopsis:'Seorang pria terjebak di labirin ruangan tanpa ujung — The Backrooms. Sebuah dimensi liminal yang terasa familiar namun tak berpenghuni. Tapi ia tidak sendirian. Sesuatu mengintainya di balik koridor-koridor fluorescent.',
+    priceFrom:55000, comingSoon:true, releaseDate:'29 Mei 2026' },
+
+  { id:'10',
+    title:'Chainsaw Man: Reze Arc',
+    genre:['Anime','Action'],
+    rating:8.3, votes:'62k', duration:'2j 0m', director:'Tatsuya Yoshihara',
+    format:['IMAX','Regular'],
+    tags:['Anime','MAPPA','Aksi'],
+    poster:'https://picsum.photos/seed/chainsawmanrezearc/400/600',
+    backdrop:'https://picsum.photos/seed/chainsawmanrezearc-bg/800/500',
+    synopsis:'Denji bertemu gadis misterius bernama Reze di sebuah kafe. Namun di balik senyum manisnya tersimpan identitas mematikan — Bomb Devil. Kisah cinta penuh darah dan ledakan dari studio MAPPA.',
+    priceFrom:65000, comingSoon:true, releaseDate:'24 Okt 2025' },
+
+  { id:'11',
+    title:'Moana 2',
+    genre:['Animasi','Petualangan'],
+    rating:6.3, votes:'112k', duration:'1j 40m', director:'David G. Derrick Jr.',
+    format:['Regular','3D','4DX'],
+    tags:['Disney','Animasi','Musik'],
+    poster:'https://picsum.photos/seed/moana2disney2024/400/600',
+    backdrop:'https://picsum.photos/seed/moana2disney2024-bg/800/500',
+    synopsis:'Tiga tahun setelah petualangan pertamanya, Moana menerima panggilan dari leluhurnya untuk berlayar ke lautan yang belum terjamah. Bersama kru baru dan Maui, ia menghadapi bahaya baru demi menyatukan kembali masyarakat Oceania.',
+    priceFrom:55000, comingSoon:true, releaseDate:'27 Nov 2024' },
+
+  { id:'12',
+    title:'Dune: Part Two',
+    genre:['Adventure','Sci-Fi'],
+    rating:8.5, votes:'680k', duration:'2j 46m', director:'Denis Villeneuve',
+    format:['ULTRA HD','IMAX','4DX'],
+    tags:['Epic','Sci-Fi','Gurun'],
+    poster:'https://picsum.photos/seed/duneparttwo2024/400/600',
+    backdrop:'https://picsum.photos/seed/duneparttwo2024-bg/800/500',
+    synopsis:'Paul Atreides bersatu dengan Chani dan bangsa Fremen untuk membalas dendam terhadap konspirasi yang menghancurkan keluarganya. Menghadapi pilihan antara cinta sejatinya dan nasib alam semesta.',
+    priceFrom:75000, comingSoon:true, releaseDate:'1 Mar 2024' }
+];
+
+const promos = [
+  { id:'p1', badge:'TERBATAS', badgeColor:'#E5C34A',
+    title:'Diskon 50% Popcorn',
+    desc:'Nikmati camilan favoritmu dengan harga setengahnya untuk setiap pembelian tiket IMAX.',
+    code:'POPCORN50',
+    img:'https://images.unsplash.com/photo-1585647347384-2593bc35786b?w=600&h=300&fit=crop&q=80' },
+  { id:'p2', badge:null, badgeColor:null,
+    title:'Buy 1 Get 1 Free',
+    desc:'Ajak teman nonton film pilihan hari ini dan dapatkan tiket gratis untuk kunjungan berikutnya.',
+    code:'BOGOFTIX',
+    img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600&h=300&fit=crop&q=80' },
+  { id:'p3', badge:'NEW MEMBER', badgeColor:'#FF8A65',
+    title:'Cashback 25%',
+    desc:'Khusus pengguna baru, dapatkan cashback saldo Movix untuk transaksi pertama kamu.',
+    code:'WELCOME25',
+    img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&h=300&fit=crop&q=80' }
+];
+
+// My tickets — mutable, can be deleted
+let myTickets = [
+  { id:'MVX-8829-9102', movieTitle:'Demon Slayer: Infinity Castle', format:'IMAX', cinema:'Grand Premiere Hall', studio:'Studio 01', date:'24 Okt 2025', time:'19:45', seats:['H12','H13'], row:'Row H',
+    poster:'https://picsum.photos/seed/demonslayer2025/400/600' },
+  { id:'MVX-7729-1004', movieTitle:'Mission: Impossible – Ghost Protocol', format:'IMAX', cinema:'Grand Lounge 4', studio:'Studio 01', date:'20 Okt 2025', time:'19:30', seats:['D5','D6'], row:'Row D',
+    poster:'https://picsum.photos/seed/mi4ghost/400/600' }
+];
+
+const cities  = ['Jakarta','Bogor','Depok','Tangerang','Bekasi'];
+const genres  = ['Semua','Action','Sci-Fi','Drama','Comedy','Horror','Fantasy','Thriller'];
+const dates   = [{m:'OCT',d:'24',w:'Kam'},{m:'OCT',d:'25',w:'Jum'},{m:'OCT',d:'26',w:'Sab'},{m:'OCT',d:'27',w:'Min'},{m:'OCT',d:'28',w:'Sen'}];
+const times   = ['13:15','16:00','18:45','21:30'];
+const occupiedSeats = ['A3','A4','B5','C2','E7','F8','G1','G2','B1'];
+
+// Notifications (mutable)
+let notifs = [
+  { id:1, title:'Promo Baru: Cashback 25%', desc:'Khusus pengguna baru, dapatkan cashback hingga Rp 25.000.', time:'5 menit lalu', read:false },
+  { id:2, title:'Tiket berhasil dipesan', desc:'Tiket Dune: Part Two untuk 24 Oct 2023 telah terkonfirmasi.', time:'2 jam lalu', read:false },
+  { id:3, title:'Film baru telah rilis', desc:'Cosmic Horizon: The Return sekarang tayang di bioskop pilihan.', time:'1 hari lalu', read:true }
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+let currentScreen   = 'onboarding';
+let screenHistory   = [];
+let obSlide         = 0;
+let currentMovieId  = '1';
+let selectedSeats   = [];
+let selectedDate    = '24';
+let selectedTime    = '18:45';
+let selectedPayMethod = null;
+let selectedCity    = 'Jakarta';
+let activeGenre     = 'Semua';
+let currentEticketId = null;
+let recentSearches  = ['Avatar 2','Marvel','Christopher Nolan'];
+let payTimerInterval = null;
+let paySecondsLeft  = 15 * 60;
+
+const TAB_SCREENS = ['home','search','tickets','promo','profile'];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════════════
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const next = document.getElementById('screen-' + screenId);
+  if (next) { next.classList.add('active'); next.scrollTop = 0; }
+  currentScreen = screenId;
+  // Update bottom nav visibility
+  const nav = document.getElementById('bottom-nav');
+  if (TAB_SCREENS.includes(screenId)) {
+    nav.classList.add('visible');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const an = document.getElementById('nav-' + screenId);
+    if (an) an.classList.add('active');
+  } else {
+    nav.classList.remove('visible');
+  }
+}
+
+// Tab navigation — top-level, RESETS history
+function goTab(screenId) {
+  closeAllPanels();
+  screenHistory = [];
+  showScreen(screenId);
+}
+
+// Sub-screen — PUSHES current screen to history
+function goSub(screenId) {
+  closeAllPanels();
+  if (currentScreen) screenHistory.push(currentScreen);
+  showScreen(screenId);
+}
+
+// Back — POPS from history, falls back to home
+function goBack() {
+  closeAllPanels();
+  if (screenHistory.length > 0) {
+    const prev = screenHistory.pop();
+    showScreen(prev);
+  } else {
+    showScreen('home');
+  }
+}
+
+function closeAllPanels() {
+  closeLocDropdown();
+  toggleNotif(false);
+  closeModal();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ONBOARDING
+// ═══════════════════════════════════════════════════════════════════════════════
+function obNext() {
+  document.getElementById('ob-slide-' + obSlide).classList.remove('active');
+  obSlide++;
+  if (obSlide >= 3) { goTab('login'); return; }
+  document.getElementById('ob-slide-' + obSlide).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════════════════════════
+function togglePass() {
+  const inp = document.getElementById('login-pass');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function doLogin() {
+  const e = document.getElementById('login-email').value;
+  const p = document.getElementById('login-pass').value;
+  if (!e || !p) { showToast('Harap isi email & password! ⚠️'); return; }
+  goTab('home');
+  renderHome();
+}
+function doLogout() {
+  openModal({
+    title: 'Keluar dari akun?',
+    message: 'Anda akan keluar dari aplikasi MOVIX dan kembali ke halaman login.',
+    confirmText: 'Keluar',
+    onConfirm: () => { closeModal(); goTab('login'); }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOCATION DROPDOWN
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderLocDropdown() {
+  const dd = document.getElementById('loc-dropdown');
+  dd.innerHTML = cities.map(c => `
+    <button class="loc-option${c === selectedCity ? ' selected' : ''}" onclick="selectCity('${c}')">
+      <svg class="ico ico-sm" style="width:14px;height:14px;"><use href="#i-pin"/></svg>
+      <span>${c}</span>
+      <svg class="ico loc-option-check" style="width:14px;height:14px;"><use href="#i-check"/></svg>
+    </button>
+  `).join('');
+}
+function toggleLocDropdown(event) {
+  event && event.stopPropagation();
+  const dd = document.getElementById('loc-dropdown');
+  dd.classList.toggle('visible');
+}
+function closeLocDropdown() {
+  const dd = document.getElementById('loc-dropdown');
+  if (dd) dd.classList.remove('visible');
+}
+function selectCity(city) {
+  selectedCity = city;
+  document.getElementById('loc-current').textContent = city;
+  closeLocDropdown();
+  renderLocDropdown();
+  showToast(`Lokasi diubah ke ${city} 📍`);
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.loc-wrap')) closeLocDropdown();
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderNotifs() {
+  const list = document.getElementById('notif-list');
+  if (notifs.length === 0) {
+    list.innerHTML = `<div class="notif-empty"><p>Tidak ada notifikasi.</p></div>`;
+  } else {
+    list.innerHTML = notifs.map(n => `
+      <div class="notif-item">
+        <div class="notif-icon"><svg class="ico ico-sm"><use href="#i-bell"/></svg></div>
+        <div class="notif-text">
+          <div class="notif-title">${n.title}</div>
+          <div class="notif-desc">${n.desc}</div>
+          <div class="notif-time">${n.time}</div>
+        </div>
+        ${!n.read ? '<div class="notif-dot"></div>' : ''}
+      </div>
+    `).join('');
+  }
+  // Update bell badges visibility
+  const unread = notifs.some(n => !n.read);
+  ['bell-badge','bell-badge-2','bell-badge-3','bell-badge-4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = unread ? 'block' : 'none';
+  });
+}
+function toggleNotif(show) {
+  const panel = document.getElementById('notif-panel');
+  const back = document.getElementById('notif-backdrop');
+  if (show) {
+    renderNotifs();
+    panel.classList.add('visible');
+    back.classList.add('visible');
+  } else {
+    panel.classList.remove('visible');
+    back.classList.remove('visible');
+  }
+}
+function clearNotifs() {
+  notifs = notifs.map(n => ({...n, read: true}));
+  renderNotifs();
+  showToast('Semua notifikasi ditandai dibaca ✓');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════════════════════════════
+let modalCallback = null;
+function openModal({ title, message, confirmText = 'Hapus', onConfirm }) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-message').textContent = message;
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.textContent = confirmText;
+  modalCallback = onConfirm;
+  btn.onclick = () => { if (modalCallback) modalCallback(); };
+  document.getElementById('confirm-modal').classList.add('visible');
+}
+function closeModal() {
+  document.getElementById('confirm-modal').classList.remove('visible');
+  modalCallback = null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// POSTER CANVAS — renders a stylized poster when no image available
+// ═══════════════════════════════════════════════════════════════════════════════
+function makeMovieCard(m, isComingSoon = false) {
+  return `
+    <div class="movie-card" onclick="openMovie('${m.id}')">
+      <div class="movie-poster-wrap">
+        <img src="${m.poster}" alt="${m.title}" loading="lazy"
+             onerror="this.src='https://placehold.co/175x260/1B2D4A/E5C34A?text=${encodeURIComponent(m.title.substring(0,12))}'">
+        <div class="rating-badge">
+          <svg class="ico" style="width:11px;height:11px;"><use href="#i-star"/></svg>${m.rating}
+        </div>
+        ${isComingSoon ? `<div class="coming-soon-badge">COMING SOON</div>` : ''}
+      </div>
+      <h4>${m.title}</h4>
+      <p class="genre-txt">${m.genre.join(' · ')}</p>
+    </div>`;
+}
+
+function renderHome() {
+  const nowShowing = movies.filter(m => !m.comingSoon);
+  const comingSoon  = movies.filter(m =>  m.comingSoon);
+  const nr = document.getElementById('now-showing-row');
+  nr.innerHTML = nowShowing.map(m => makeMovieCard(m, false)).join('');
+  const cs = document.getElementById('coming-soon-row');
+  if (cs) cs.innerHTML = comingSoon.map(m => makeMovieCard(m, true)).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderSearch() {
+  // Genre filter row
+  const gr = document.getElementById('search-genre-row');
+  gr.innerHTML = genres.map(g => `
+    <button class="genre-chip${g === activeGenre ? ' active' : ''}" onclick="selectGenre('${g}')">${g}</button>
+  `).join('');
+
+  renderRecentChips();
+  applyFilters();
+}
+
+function selectGenre(g) {
+  activeGenre = g;
+  document.querySelectorAll('#search-genre-row .genre-chip').forEach(c => {
+    c.classList.toggle('active', c.textContent.trim() === g);
+  });
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  let list = movies;
+  if (activeGenre && activeGenre !== 'Semua') {
+    list = list.filter(m => m.genre.some(g => g.toLowerCase() === activeGenre.toLowerCase()));
+  }
+  if (q) {
+    list = list.filter(m =>
+      m.title.toLowerCase().includes(q) ||
+      m.genre.some(g => g.toLowerCase().includes(q))
+    );
+  }
+  const title = document.getElementById('search-results-title');
+  const rs = document.getElementById('recent-section');
+  title.textContent = (q || activeGenre !== 'Semua') ? 'Hasil Pencarian' : 'Film Populer';
+  rs.style.display = q ? 'none' : '';
+  renderMoviesGrid(list);
+}
+
+function renderRecentChips() {
+  const rc = document.getElementById('recent-chips');
+  const rs = document.getElementById('recent-section');
+  if (recentSearches.length === 0) { rs.style.display = 'none'; return; }
+  rs.style.display = '';
+  rc.innerHTML = recentSearches.map(r =>
+    `<div class="recent-chip">${r}<button class="recent-chip-del" onclick="removeRecent('${r}')">
+      <svg class="ico" style="width:10px;height:10px;"><use href="#i-x"/></svg>
+    </button></div>`
+  ).join('');
+}
+function removeRecent(item) { recentSearches = recentSearches.filter(r => r !== item); renderRecentChips(); }
+function clearRecent()      { recentSearches = []; renderRecentChips(); }
+
+function renderMoviesGrid(list) {
+  const grid = document.getElementById('movies-grid');
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-results">
+        <svg class="ico"><use href="#i-search"/></svg>
+        <p>Tidak ada film yang ditemukan</p>
+      </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(m => `
+    <div class="movie-grid-card" onclick="openMovie('${m.id}')">
+      <div class="movie-grid-card-wrap">
+        <img src="${m.poster}" alt="${m.title}" loading="lazy"
+             onerror="this.src='https://placehold.co/200x300/1B2D4A/E5C34A?text=${encodeURIComponent(m.title.substring(0,12))}'">
+        <div class="rating-badge" style="top:8px;left:8px;font-size:10px;padding:3px 7px;">
+          <svg class="ico" style="width:10px;height:10px;"><use href="#i-star"/></svg>${m.rating}
+        </div>
+        ${m.comingSoon ? `<div class="coming-soon-badge">COMING SOON</div>` : ''}
+      </div>
+      <h4>${m.title}</h4>
+      <p class="genre-txt">${m.genre.join(' · ')}</p>
+    </div>`
+  ).join('');
+}
+
+function filterMovies(q) {
+  const clear = document.getElementById('search-clear');
+  clear.classList.toggle('visible', !!q);
+  applyFilters();
+}
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').classList.remove('visible');
+  applyFilters();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MOVIE DETAIL (sub-screen — uses goSub)
+// ═══════════════════════════════════════════════════════════════════════════════
+function openMovie(id) {
+  currentMovieId = id;
+  const m = movies.find(x => x.id === id);
+  if (!m) return;
+
+  // Set backdrop image
+  const bdImg = document.getElementById('detail-img');
+  if (bdImg) {
+    bdImg.src = m.backdrop || m.poster;
+    bdImg.onerror = () => { bdImg.src = `https://placehold.co/430x320/1B2D4A/E5C34A?text=${encodeURIComponent((m.title||'').substring(0,12))}`; };
+  }
+
+  document.getElementById('detail-formats').innerHTML = m.format.map(f =>
+    `<span class="badge-gold">${f}</span>`).join('');
+  document.getElementById('detail-title').textContent = m.title.toUpperCase();
+  document.getElementById('detail-meta').innerHTML =
+    `<svg class="ico star" style="width:14px;height:14px;"><use href="#i-star"/></svg>` +
+    `<span class="rating-val">${m.rating}</span>` +
+    `<span class="txt-sec">(${m.votes})</span>` +
+    `<span class="dot">•</span>${m.genre.join(' / ')}` +
+    `<span class="dot">•</span>${m.duration}`;
+  document.getElementById('detail-tags').innerHTML = m.tags.map(t =>
+    `<span class="tag-chip">${t}</span>`).join('');
+  document.getElementById('detail-synopsis').textContent = m.synopsis;
+  document.getElementById('detail-director').textContent = m.director;
+  document.getElementById('detail-rating').textContent = m.rating + ' / 10';
+
+  if (m.comingSoon) {
+    document.getElementById('detail-price-lbl').textContent = 'Tayang Mulai';
+    document.getElementById('detail-price').textContent = m.releaseDate;
+    const btn = document.getElementById('detail-book-btn');
+    btn.textContent = 'Ingatkan Saya 🔔';
+    btn.className = 'book-btn book-btn-notify';
+    btn.onclick = () => showToast(`Kami akan ingatkan kamu saat "${m.title}" tayang! 🔔`);
+  } else {
+    document.getElementById('detail-price-lbl').textContent = 'Harga mulai dari';
+    document.getElementById('detail-price').textContent = 'Rp ' + m.priceFrom.toLocaleString('id-ID');
+    const btn = document.getElementById('detail-book-btn');
+    btn.textContent = 'Pesan Tiket';
+    btn.className = 'book-btn';
+    btn.onclick = () => openSeat(id);
+  }
+  goSub('detail');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SEAT PICKER (sub-screen)
+// ═══════════════════════════════════════════════════════════════════════════════
+function openSeat(id) {
+  currentMovieId = id;
+  const m = movies.find(x => x.id === id);
+  selectedSeats = [];
+  document.getElementById('seat-movie-title').textContent = m ? m.title.toUpperCase() : '';
+  renderDateBtns();
+  renderTimeBtns();
+  renderSeatGrid();
+  updateSeatSummary();
+  goSub('seat');
+}
+
+function renderDateBtns() {
+  const el = document.getElementById('date-btns');
+  el.innerHTML = dates.map(d => `
+    <button class="date-btn${d.d===selectedDate?' active':''}" onclick="selectDate('${d.d}',this)">
+      <span class="date-month">${d.m}</span>
+      <span class="date-day">${d.d}</span>
+      <span class="date-weekday">${d.w}</span>
+    </button>
+  `).join('');
+}
+function renderTimeBtns() {
+  const el = document.getElementById('time-btns');
+  el.innerHTML = times.map(t => `
+    <button class="time-btn${t===selectedTime?' active':''}" onclick="selectTime('${t}',this)">${t}</button>
+  `).join('');
+}
+function selectDate(d, el) {
+  selectedDate = d;
+  document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function selectTime(t, el) {
+  selectedTime = t;
+  document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function renderSeatGrid() {
+  const rows = ['A','B','C','D','E','F','G'];
+  const cols = 8;
+  const grid = document.getElementById('seat-grid');
+  grid.innerHTML = rows.map(row =>
+    `<div class="seat-row">${Array.from({length:cols},(_,i) => {
+      const sid = `${row}${i+1}`;
+      const occ = occupiedSeats.includes(sid);
+      const sel = selectedSeats.includes(sid);
+      const cls = occ ? 'seat seat-occupied' : sel ? 'seat seat-selected' : 'seat seat-avail';
+      return `<button class="${cls}" ${occ?'disabled':''} onclick="toggleSeat('${sid}',this)">${sid}</button>`;
+    }).join('')}</div>`
+  ).join('');
+}
+function toggleSeat(sid, el) {
+  if (selectedSeats.includes(sid)) {
+    selectedSeats = selectedSeats.filter(s => s !== sid);
+    el.className = 'seat seat-avail';
+  } else {
+    selectedSeats.push(sid);
+    el.className = 'seat seat-selected';
+  }
+  updateSeatSummary();
+}
+function updateSeatSummary() {
+  const m = movies.find(x => x.id === currentMovieId);
+  const total = selectedSeats.length * (m ? m.priceFrom : 50000);
+  document.getElementById('seat-summary').textContent = selectedSeats.length > 0 ? selectedSeats.join(', ') : '-';
+  document.getElementById('seat-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+  const btn = document.getElementById('seat-pay-btn');
+  btn.disabled = selectedSeats.length === 0;
+  btn.style.opacity = selectedSeats.length === 0 ? '.5' : '1';
+}
+
+function gotoPayment() {
+  const m = movies.find(x => x.id === currentMovieId);
+  const subtotal = selectedSeats.length * (m ? m.priceFrom : 50000);
+  const total = subtotal + 4000;
+  document.getElementById('pay-movie-title').textContent = m ? m.title : '';
+  const payPoster = document.getElementById('pay-poster');
+  if (payPoster && m) {
+    payPoster.src = m.poster;
+    payPoster.onerror = () => { payPoster.src = `https://placehold.co/68x88/1B2D4A/E5C34A?text=${encodeURIComponent((m.title||'').substring(0,6))}`; };
+  }
+  document.getElementById('pay-date-time').textContent = `${selectedDate} Okt 2025, ${selectedTime}`;
+  document.getElementById('pay-seats').textContent = `Kursi: ${selectedSeats.join(', ')}`;
+  document.getElementById('pay-ticket-count').textContent = `Tiket (${selectedSeats.length}x)`;
+  document.getElementById('pay-subtotal').textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
+  document.getElementById('pay-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+  selectedPayMethod = null;
+  document.querySelectorAll('.ewallet-btn, .method-row').forEach(el => el.classList.remove('active'));
+  document.getElementById('pay-now-btn').disabled = true;
+  startPayTimer();
+  goSub('payment');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PAYMENT
+// ═══════════════════════════════════════════════════════════════════════════════
+function startPayTimer() {
+  if (payTimerInterval) clearInterval(payTimerInterval);
+  paySecondsLeft = 15 * 60;
+  updateTimerDisplay();
+  payTimerInterval = setInterval(() => {
+    paySecondsLeft--;
+    updateTimerDisplay();
+    if (paySecondsLeft <= 0) { clearInterval(payTimerInterval); showToast('Waktu habis! ⏱'); goBack(); }
+  }, 1000);
+}
+function updateTimerDisplay() {
+  const m = String(Math.floor(paySecondsLeft / 60)).padStart(2,'0');
+  const s = String(paySecondsLeft % 60).padStart(2,'0');
+  const el = document.getElementById('pay-timer');
+  if (el) el.textContent = `${m}:${s}`;
+}
+function selectPayMethod(method, el) {
+  selectedPayMethod = method;
+  document.querySelectorAll('.ewallet-btn, .method-row').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pay-now-btn').disabled = false;
+}
+function doPayment() {
+  if (!selectedPayMethod) return;
+  if (payTimerInterval) clearInterval(payTimerInterval);
+  const m = movies.find(x => x.id === currentMovieId);
+  const successPoster = document.getElementById('success-poster');
+  if (successPoster && m) {
+    successPoster.src = m.poster;
+    successPoster.onerror = () => { successPoster.src = `https://placehold.co/80x100/1B2D4A/E5C34A?text=${encodeURIComponent((m.title||'').substring(0,6))}`; };
+  }
+  document.getElementById('success-movie').textContent = m ? m.title : '';
+  document.getElementById('success-date').textContent = `${selectedDate} Okt 2025 • ${selectedTime}`;
+  document.getElementById('success-seats').textContent = selectedSeats.join(', ');
+  const bid = '#MVX-' + Math.floor(Math.random()*900000+100000);
+  document.getElementById('success-booking-id').textContent = bid;
+  if (m) {
+    myTickets.unshift({
+      id: bid.replace('#',''),
+      movieTitle: m.title,
+      format: m.format[0],
+      cinema: 'Grand Lounge 4',
+      studio: 'Studio 01',
+      date: `${selectedDate} Okt 2025`,
+      time: selectedTime,
+      seats: [...selectedSeats],
+      row: 'Row ' + selectedSeats[0][0],
+      poster: m.poster   // SVG data URI
+    });
+    renderTickets();
+  }
+  goSub('success');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TICKETS
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderTickets() {
+  const list = document.getElementById('ticket-list');
+  if (myTickets.length === 0) {
+    list.innerHTML = `
+      <div class="tickets-empty">
+        <svg class="ico"><use href="#i-ticket"/></svg>
+        <h3>Belum ada tiket</h3>
+        <p>Tiket yang sudah dipesan akan tampil di sini.</p>
+      </div>`;
+    return;
+  }
+  list.innerHTML = myTickets.map(t => {
+    const fallback = `https://placehold.co/58x78/1B2D4A/E5C34A?text=${encodeURIComponent((t.movieTitle||'').substring(0,6))}`;
+    const posterSrc = t.poster || fallback;
+    return `
+      <div class="ticket-list-item">
+        <div class="ticket-list-item-body" onclick="openEticket('${t.id}')">
+          <div class="ticket-list-poster">
+            <img src="${posterSrc}" alt="${t.movieTitle}"
+                 onerror="this.src='${fallback}'"
+                 style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);">
+          </div>
+          <div class="tl-info">
+            <div class="tl-badges">
+              <span class="active-badge">ACTIVE</span>
+              <span class="tl-format">${t.format}</span>
+            </div>
+            <div class="tl-title">${t.movieTitle}</div>
+            <div class="tl-meta">${t.cinema}</div>
+            <div class="tl-meta">
+              <svg class="ico"><use href="#i-calendar"/></svg> ${t.date} • ${t.time}
+            </div>
+            <div class="tl-meta">
+              <svg class="ico"><use href="#i-chair"/></svg> ${t.seats.join(', ')}
+            </div>
+          </div>
+        </div>
+        <button class="tl-delete" onclick="confirmDeleteTicket('${t.id}')" aria-label="Hapus tiket">
+          <svg class="ico ico-sm"><use href="#i-trash"/></svg>
+        </button>
+      </div>`;
+  }).join('');
+}
+
+function openEticket(id) {
+  const t = myTickets.find(x => x.id === id);
+  if (!t) return;
+  currentEticketId = id;
+  document.getElementById('et-format').textContent = t.format;
+  document.getElementById('et-title').textContent = t.movieTitle;
+  document.getElementById('et-date').textContent = t.date;
+  document.getElementById('et-time').textContent = t.time;
+  document.getElementById('et-cinema').textContent = t.cinema;
+  document.getElementById('et-studio').textContent = t.studio;
+  document.getElementById('et-seats').textContent = t.seats.join(', ');
+  document.getElementById('et-row').textContent = t.row;
+  document.getElementById('et-id').textContent = 'ID: ' + t.id;
+  document.getElementById('delete-eticket-btn').onclick = () => confirmDeleteTicket(id, true);
+  goSub('eticket');
+}
+
+function confirmDeleteTicket(id, fromEticket = false) {
+  const t = myTickets.find(x => x.id === id);
+  if (!t) return;
+  openModal({
+    title: 'Hapus tiket?',
+    message: `Tiket "${t.movieTitle}" akan dihapus permanen dari daftar tiket Anda.`,
+    confirmText: 'Hapus',
+    onConfirm: () => {
+      myTickets = myTickets.filter(x => x.id !== id);
+      renderTickets();
+      closeModal();
+      showToast('Tiket berhasil dihapus 🗑');
+      if (fromEticket) goBack();
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROMO
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderPromos() {
+  const list = document.getElementById('promo-list');
+  list.innerHTML = promos.map(p => `
+    <div class="promo-card-item">
+      <div class="promo-img-wrap">
+        <img class="promo-card-img" src="${p.img}" alt="${p.title}" loading="lazy">
+        <div class="promo-img-overlay">
+          ${p.badge ? `<span class="badge-gold" style="background:${p.badgeColor};color:${p.badgeColor==='#E5C34A'?'#0A0E1A':'white'};">${p.badge}</span>` : ''}
+        </div>
+      </div>
+      <div class="promo-body-item">
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <div class="code-row">
+          <div class="code-box">
+            <div class="code-lbl">KODE PROMO</div>
+            <div class="code-val">${p.code}</div>
+          </div>
+          <button class="copy-btn" id="copy-${p.id}" onclick="copyCode('${p.code}','${p.id}')">Salin Kode</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function copyCode(code, id) {
+  navigator.clipboard && navigator.clipboard.writeText(code).catch(() => {});
+  const btn = document.getElementById('copy-' + id);
+  btn.textContent = 'Disalin ✓';
+  btn.classList.add('copied');
+  showToast(`Kode "${code}" berhasil disalin! 🎉`);
+  setTimeout(() => { btn.textContent = 'Salin Kode'; btn.classList.remove('copied'); }, 2000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════════════════
+let toastTimeout;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════════
+(function init() {
+  renderLocDropdown();
+  renderHome();
+  renderSearch();
+  renderTickets();
+  renderPromos();
+  renderNotifs();
+})();
+</script>
+</body>
+</html>
