@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=430, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MOVIX — The Premiere Experience</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -410,6 +410,60 @@ img { display: block; }
 .social-btn:hover { border-color: var(--gold); }
 .register-row { text-align: center; margin-top: 20px; color: var(--txt-sec); font-size: 13px; }
 .register-row span { color: var(--gold); font-weight: 600; cursor: pointer; }
+
+/* ─── Register screen ─── */
+#screen-register {
+  justify-content: flex-start;
+  padding: 0 24px 40px;
+  animation: fadeIn .4s;
+  overflow-y: auto;
+}
+.register-header {
+  display: flex; align-items: center;
+  padding: 52px 0 20px; gap: 14px;
+}
+.register-header .logo-text { font-size: 22px; }
+.register-sub { color: var(--txt-sec); font-size: 13px; margin-bottom: 24px; }
+.register-card { padding: 24px; margin-bottom: 4px; }
+.register-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.avatar-pick {
+  display: flex; flex-direction: column; align-items: center;
+  margin-bottom: 22px;
+}
+.avatar-circle {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--bg-alt); border: 2px dashed var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--txt-sec); cursor: pointer; margin-bottom: 8px;
+  transition: border-color .2s;
+  font-size: 28px;
+}
+.avatar-circle:hover { border-color: var(--gold); }
+.avatar-pick span { font-size: 12px; color: var(--txt-sec); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { margin-bottom: 14px; }
+.gender-row { display: flex; gap: 10px; margin-bottom: 14px; }
+.gender-btn {
+  flex: 1; padding: 12px;
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--txt-sec); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.gender-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(229,195,74,.08); }
+.terms-check {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 20px; cursor: pointer;
+}
+.terms-check input[type="checkbox"] {
+  width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0;
+  accent-color: var(--gold); cursor: pointer;
+}
+.terms-check label {
+  font-size: 12px; color: var(--txt-sec); line-height: 1.5; cursor: pointer;
+}
+.terms-check label span { color: var(--gold); font-weight: 600; }
 
 /* ═══════════════════════════════════════════
    3. HOME
@@ -964,6 +1018,73 @@ img { display: block; }
   font-size: 11px; color: var(--gold); font-weight: 700;
   letter-spacing: 2px; padding: 0 16px; margin-bottom: 12px;
 }
+
+/* Payment method accordion */
+.pay-method-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin: 0 16px 10px;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.pay-method-group.selected { border-color: var(--gold); }
+.pay-method-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 15px 16px;
+  cursor: pointer;
+  width: 100%; text-align: left; color: var(--white);
+  transition: background .2s;
+}
+.pay-method-header:hover { background: var(--bg-alt); }
+.pay-method-header .mico { color: var(--gold); width: 26px; flex-shrink: 0; }
+.pay-method-header .mttl { flex: 1; font-size: 14px; font-weight: 600; }
+.pay-method-header .marrow {
+  color: var(--txt-sec);
+  transition: transform .25s;
+}
+.pay-method-group.open .pay-method-header .marrow { transform: rotate(180deg); }
+.pay-method-body {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pay-method-group.open .pay-method-body { display: flex; }
+
+/* Flat button (Cash, QRIS) — no dropdown */
+.pay-method-flat {
+  display: flex; align-items: center; gap: 14px;
+  padding: 15px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin: 0 16px 10px;
+  cursor: pointer; color: var(--white);
+  width: calc(100% - 32px); text-align: left;
+  font-size: 14px; font-weight: 600;
+  transition: border-color .2s, background .2s;
+}
+.pay-method-flat:hover { background: var(--bg-alt); }
+.pay-method-flat.selected { border-color: var(--gold); color: var(--gold); }
+.pay-method-flat .mico { color: var(--gold); width: 26px; flex-shrink: 0; }
+.pay-method-flat.selected .mico { color: var(--gold); }
+
+/* Sub option buttons inside accordion */
+.pay-sub-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  width: calc(50% - 6px);
+  padding: 14px 10px;
+  background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer; color: var(--txt-sec);
+  font-size: 12px; font-weight: 600;
+  transition: all .2s;
+}
+.pay-sub-btn span { font-size: 22px; }
+.pay-sub-btn:hover { border-color: var(--gold); color: var(--white); }
+.pay-sub-btn.active { border-color: var(--gold); background: rgba(229,195,74,.08); color: var(--gold); }
 .order-card {
   display: flex; gap: 14px; align-items: flex-start;
   background: var(--bg-card); border: 1px solid var(--border);
@@ -1620,7 +1741,91 @@ img { display: block; }
         <button class="social-btn" onclick="doLogin()">🍎</button>
       </div>
     </div>
-    <div class="register-row">Belum punya akun? <span onclick="showToast('Fitur daftar segera hadir! 🎬')">Daftar</span></div>
+    <div class="register-row">Belum punya akun? <span onclick="goSub('register')">Daftar Sekarang</span></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 2B: REGISTER
+  ═══════════════════════════════════════════ -->
+  <div id="screen-register" class="screen">
+    <div class="register-header">
+      <button class="icon-btn" onclick="goBack()" aria-label="Back">
+        <svg class="ico ico-sm"><use href="#i-back"/></svg>
+      </button>
+      <span class="logo-text">MOVIX</span>
+      <div class="topbar-spacer"></div>
+    </div>
+
+    <div class="card register-card">
+      <h2>Buat Akun Baru</h2>
+      <p class="register-sub">Daftar dan nikmati pengalaman menonton terbaik.</p>
+
+      <!-- Avatar pick -->
+      <div class="avatar-pick">
+        <div class="avatar-circle" onclick="showToast('Fitur upload foto segera hadir 📷')">
+          <svg class="ico ico-lg"><use href="#i-user"/></svg>
+        </div>
+        <span>Tambah foto profil</span>
+      </div>
+
+      <!-- Nama -->
+      <div class="form-label">Nama Lengkap</div>
+      <div class="input-wrap">
+        <span class="iico">👤</span>
+        <input type="text" id="reg-fullname" placeholder="Nama lengkap kamu">
+      </div>
+
+      <!-- Email -->
+      <div class="form-label">Email</div>
+      <div class="input-wrap">
+        <span class="iico">✉</span>
+        <input type="email" id="reg-email" placeholder="nama@email.com">
+      </div>
+
+      <!-- No HP -->
+      <div class="form-label">Nomor HP</div>
+      <div class="input-wrap">
+        <span class="iico" style="font-size:13px;font-weight:600;color:var(--txt-sec);">+62</span>
+        <input type="tel" id="reg-phone" placeholder="812 3456 7890">
+      </div>
+
+      <!-- Password -->
+      <div class="form-label">Password</div>
+      <div class="input-wrap">
+        <span class="iico">🔒</span>
+        <input type="password" id="reg-pass" placeholder="Min. 8 karakter">
+        <button class="eye-btn" onclick="toggleRegPass()">👁</button>
+      </div>
+
+      <!-- Konfirmasi Password -->
+      <div class="form-label">Konfirmasi Password</div>
+      <div class="input-wrap">
+        <span class="iico">🔒</span>
+        <input type="password" id="reg-pass-confirm" placeholder="Ulangi password">
+        <button class="eye-btn" onclick="toggleRegPassConfirm()">👁</button>
+      </div>
+
+      <!-- Terms -->
+      <div class="terms-check">
+        <input type="checkbox" id="reg-terms">
+        <label for="reg-terms">
+          Saya menyetujui <span>Syarat & Ketentuan</span> serta
+          <span>Kebijakan Privasi</span> MOVIX
+        </label>
+      </div>
+
+      <button class="gold-btn" onclick="doRegister()">Daftar Sekarang</button>
+
+      <div class="or-divider">Atau daftar dengan</div>
+      <div class="social-row">
+        <button class="social-btn" onclick="doRegister()">G</button>
+        <button class="social-btn" onclick="doRegister()">🍎</button>
+      </div>
+    </div>
+
+    <div class="register-row" style="padding-bottom:20px;">
+      Sudah punya akun? <span onclick="goBack()">Masuk</span>
+    </div>
   </div>
 
   <!-- ═══════════════════════════════════════════
@@ -1860,30 +2065,24 @@ img { display: block; }
     </div>
 
     <div class="pay-section-lbl">METODE PEMBAYARAN</div>
-    <div class="sub-lbl">E-Wallet</div>
-    <div class="ewallet-row">
-      <button class="ewallet-btn" onclick="selectPayMethod('gopay',this)"><span>💚</span>GoPay</button>
-      <button class="ewallet-btn" onclick="selectPayMethod('ovo',this)"><span>💜</span>OVO</button>
-      <button class="ewallet-btn" onclick="selectPayMethod('dana',this)"><span>💙</span>Dana</button>
-    </div>
-    <div class="sub-lbl">Metode Lainnya</div>
-    <div class="other-methods">
-      <button class="method-row" onclick="selectPayMethod('qris',this)">
-        <svg class="ico mico"><use href="#i-qr"/></svg>
-        <span class="mlbl">QRIS</span>
-        <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
-      </button>
-      <button class="method-row" onclick="selectPayMethod('transfer',this)">
-        <svg class="ico mico"><use href="#i-bank"/></svg>
-        <span class="mlbl">Transfer Bank</span>
-        <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
-      </button>
-      <button class="method-row" onclick="selectPayMethod('card',this)">
-        <svg class="ico mico"><use href="#i-card"/></svg>
-        <span class="mlbl">Kartu Kredit/Debit</span>
-        <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
-      </button>
-    </div>
+
+    <!-- Cash -->
+    <button class="pay-method-flat" id="pay-cash" onclick="selectFlatMethod('cash','pay-cash')">
+      <svg class="ico mico"><use href="#i-wallet"/></svg>
+      <span>Cash</span>
+    </button>
+
+    <!-- QRIS -->
+    <button class="pay-method-flat" id="pay-qris" onclick="selectFlatMethod('qris','pay-qris')">
+      <svg class="ico mico"><use href="#i-qr"/></svg>
+      <span>QRIS</span>
+    </button>
+
+    <!-- Virtual Account -->
+    <button class="pay-method-flat" id="pay-va" onclick="selectFlatMethod('va','pay-va')">
+      <svg class="ico mico"><use href="#i-bank"/></svg>
+      <span>Virtual Account</span>
+    </button>
 
     <div class="pay-section-lbl">DETAIL PEMBAYARAN</div>
     <div class="detail-card">
@@ -2059,29 +2258,10 @@ img { display: block; }
         <div class="avatar-img"><svg class="ico ico-lg"><use href="#i-user"/></svg></div>
         <span class="pro-badge">PRO</span>
       </div>
-      <div class="profile-name">Adrian Wijaya</div>
+      <div class="profile-name" id="profile-name">Aqsyal Hilmi</div>
       <div class="profile-tier">
         <svg class="ico" style="width:14px;height:14px;"><use href="#i-star"/></svg>
         GOLD MEMBER
-      </div>
-    </div>
-    <div class="points-card">
-      <div class="points-lbl">TOTAL MOVIX POINTS</div>
-      <div class="points-row">
-        <span class="points-val">12,450</span>
-        <span class="points-unit"> pts</span>
-        <button class="redeem-btn" onclick="showToast('Menukar poin... 🎁')">Redeem</button>
-      </div>
-      <div class="points-meta">
-        <div class="pm-col">
-          <div class="pm-lbl">EXPIRING SOON</div>
-          <div class="pm-val">450 pts (Oct 2024)</div>
-        </div>
-        <div class="pm-divider"></div>
-        <div class="pm-col" style="padding-left:16px;">
-          <div class="pm-lbl">TIER STATUS</div>
-          <div class="pm-val">2,550 to Platinum</div>
-        </div>
       </div>
     </div>
     <div class="menu-section-lbl">AKUN SAYA</div>
@@ -2093,11 +2273,6 @@ img { display: block; }
     <button class="menu-item" onclick="showToast('Membuka riwayat transaksi...')">
       <svg class="ico mico"><use href="#i-history"/></svg>
       <span class="mlbl">Riwayat Transaksi</span>
-      <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
-    </button>
-    <button class="menu-item" onclick="showToast('Membuka metode pembayaran...')">
-      <svg class="ico mico"><use href="#i-wallet"/></svg>
-      <span class="mlbl">Metode Pembayaran</span>
       <svg class="ico marrow ico-sm" style="transform:rotate(180deg)"><use href="#i-back"/></svg>
     </button>
     <button class="menu-item" onclick="showToast('Membuka pusat bantuan...')">
@@ -2296,16 +2471,18 @@ const promos = [
 ];
 
 // My tickets — mutable, can be deleted
-let myTickets = [
-  { id:'MVX-8829-9102', movieTitle:'Demon Slayer: Infinity Castle', format:'IMAX', cinema:'Grand Premiere Hall', studio:'Studio 01', date:'24 Okt 2025', time:'19:45', seats:['H12','H13'], row:'Row H',
-    poster:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=600&fit=crop&q=80' },
-  { id:'MVX-7729-1004', movieTitle:'Mission: Impossible – Ghost Protocol', format:'IMAX', cinema:'Grand Lounge 4', studio:'Studio 01', date:'20 Okt 2025', time:'19:30', seats:['D5','D6'], row:'Row D',
-    poster:'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=400&h=600&fit=crop&q=80' }
-];
+let myTickets = [];
 
 const cities  = ['Jakarta','Bogor','Depok','Tangerang','Bekasi'];
 const genres  = ['Semua','Action','Sci-Fi','Drama','Comedy','Horror','Fantasy','Thriller'];
-const dates   = [{m:'OCT',d:'24',w:'Kam'},{m:'OCT',d:'25',w:'Jum'},{m:'OCT',d:'26',w:'Sab'},{m:'OCT',d:'27',w:'Min'},{m:'OCT',d:'28',w:'Sen'}];
+const dayNames = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+// Mulai dari hari ini (Minggu, 14 Jun 2026) — pakai offset hari
+const baseDay = 0; // 0=Min, ref tanggal 1 = Senin
+const dates = Array.from({length:30}, (_,i) => ({
+  d: String(i+1).padStart(2,'0'),
+  w: dayNames[(baseDay + i) % 7]
+}));
+
 const times   = ['13:15','16:00','18:45','21:30'];
 const occupiedSeats = ['A3','A4','B5','C2','E7','F8','G1','G2','B1'];
 
@@ -2404,13 +2581,31 @@ function togglePass() {
   const inp = document.getElementById('login-pass');
   inp.type = inp.type === 'password' ? 'text' : 'password';
 }
+// Simpan data akun yang sudah register
+let registeredAccount = null;
+
 function doLogin() {
-  const e = document.getElementById('login-email').value;
+  const e = document.getElementById('login-email').value.trim();
   const p = document.getElementById('login-pass').value;
   if (!e || !p) { showToast('Harap isi email & password! ⚠️'); return; }
+
+  // Cek apakah email & password cocok dengan akun yang sudah register
+  if (registeredAccount) {
+    if (e !== registeredAccount.email) {
+      showToast('Email tidak ditemukan! ⚠️'); return;
+    }
+    if (p !== registeredAccount.password) {
+      showToast('Password salah! ⚠️'); return;
+    }
+    // Update profil sesuai akun yang login
+    const profileName = document.getElementById('profile-name');
+    if (profileName) profileName.textContent = registeredAccount.name;
+  }
+
   goTab('home');
   renderHome();
 }
+
 function doLogout() {
   openModal({
     title: 'Keluar dari akun?',
@@ -2418,6 +2613,41 @@ function doLogout() {
     confirmText: 'Keluar',
     onConfirm: () => { closeModal(); goTab('login'); }
   });
+}
+
+// ─── REGISTER ────────────────────────────────────────────────────────────────
+function toggleRegPass() {
+  const inp = document.getElementById('reg-pass');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function toggleRegPassConfirm() {
+  const inp = document.getElementById('reg-pass-confirm');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function doRegister() {
+  const name  = document.getElementById('reg-fullname').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass-confirm').value;
+  const terms = document.getElementById('reg-terms').checked;
+
+  if (!name)           { showToast('Harap isi nama lengkap! ⚠️'); return; }
+  if (!email)          { showToast('Harap isi email! ⚠️'); return; }
+  if (!phone)          { showToast('Harap isi nomor HP! ⚠️'); return; }
+  if (pass.length < 8) { showToast('Password minimal 8 karakter! ⚠️'); return; }
+  if (pass !== pass2)  { showToast('Password tidak cocok! ⚠️'); return; }
+  if (!terms)          { showToast('Harap setujui syarat & ketentuan! ⚠️'); return; }
+
+  // Simpan data akun
+  registeredAccount = { name, email, phone, password: pass };
+
+  // Isi otomatis email di login screen
+  const loginEmail = document.getElementById('login-email');
+  if (loginEmail) loginEmail.value = email;
+
+  showToast('Akun berhasil dibuat! Silakan login 🎉');
+  setTimeout(() => { goBack(); }, 800);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -2705,9 +2935,8 @@ function renderDateBtns() {
   const el = document.getElementById('date-btns');
   el.innerHTML = dates.map(d => `
     <button class="date-btn${d.d===selectedDate?' active':''}" onclick="selectDate('${d.d}',this)">
-      <span class="date-month">${d.m}</span>
+      <span class="date-weekday" style="font-size:10px;font-weight:600;letter-spacing:.5px;">${d.w}</span>
       <span class="date-day">${d.d}</span>
-      <span class="date-weekday">${d.w}</span>
     </button>
   `).join('');
 }
@@ -2777,7 +3006,7 @@ function gotoPayment() {
   document.getElementById('pay-subtotal').textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
   document.getElementById('pay-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
   selectedPayMethod = null;
-  document.querySelectorAll('.ewallet-btn, .method-row').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.pay-method-flat').forEach(el => el.classList.remove('selected'));
   document.getElementById('pay-now-btn').disabled = true;
   startPayTimer();
   goSub('payment');
@@ -2802,10 +3031,16 @@ function updateTimerDisplay() {
   const el = document.getElementById('pay-timer');
   if (el) el.textContent = `${m}:${s}`;
 }
-function selectPayMethod(method, el) {
+function resetPayMethods() {
+  document.querySelectorAll('.pay-method-flat').forEach(b => b.classList.remove('selected'));
+  document.getElementById('pay-now-btn').disabled = true;
+  selectedPayMethod = null;
+}
+function selectFlatMethod(method, btnId) {
+  resetPayMethods();
   selectedPayMethod = method;
-  document.querySelectorAll('.ewallet-btn, .method-row').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+  const btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('selected');
   document.getElementById('pay-now-btn').disabled = false;
 }
 function doPayment() {
