@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=430, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>MOVIX — The Premiere Experience</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -38,11 +38,7 @@ html, body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-body {
-  display: flex;
-  justify-content: center;
-  background: #050810;
-}
+body { display: flex; justify-content: center; }
 a { text-decoration: none; color: inherit; }
 button { border: none; cursor: pointer; font-family: inherit; background: none; color: inherit; }
 input { font-family: inherit; outline: none; border: none; }
@@ -61,7 +57,6 @@ img { display: block; }
   background: var(--bg);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 80px rgba(0,0,0,.9);
 }
 
 /* ═══════════════════════════════════════════
@@ -467,49 +462,6 @@ img { display: block; }
   padding: 8px 16px; color: white;
   font-size: 13px; font-weight: 500; cursor: pointer;
 }
-
-/* Home movies carousel — horizontal scroll, tall poster like TIX ID */
-.home-movies-grid {
-  display: flex;
-  overflow-x: auto;
-  gap: 12px;
-  padding: 0 16px 8px;
-  scrollbar-width: none;
-  scroll-snap-type: x mandatory;
-}
-.home-movies-grid::-webkit-scrollbar { display: none; }
-.home-movie-card {
-  cursor: pointer;
-  transition: transform .2s;
-  flex-shrink: 0;
-  width: 42%;
-  scroll-snap-align: start;
-}
-.home-movie-card:hover { transform: translateY(-2px); }
-.home-poster-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--bg-alt);
-  margin-bottom: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.4);
-}
-.home-poster-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
-}
-.home-movie-card h4 {
-  font-size: 13px; font-weight: 700;
-  margin-bottom: 2px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  width: 100%;
-}
-.home-movie-card .genre-txt { font-size: 11px; color: var(--txt-sec); }
 
 /* Movie cards - horizontal, BIGGER */
 .movies-row { padding: 0 16px 4px; gap: 14px; }
@@ -1654,20 +1606,32 @@ img { display: block; }
     </div>
 
     <!-- Hero -->
+    <div class="hero-banner" onclick="openMovie('1')">
+      <img class="hero-img" src="https://image.tmdb.org/t/p/w1280/cNLAh3GzTZBHqcaNMiVnTTXwYCc.jpg" alt="">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="badge-gold">TRENDING NOW</span>
+        <h2 id="hero-title">Mission: Impossible – Ghost Protocol</h2>
+        <div class="hero-btns">
+          <button class="hero-book-btn" onclick="event.stopPropagation(); openSeat('1')">Book Now</button>
+          <button class="hero-trailer-btn" onclick="event.stopPropagation(); showToast('Memuat trailer... 🎬')">
+            <svg class="ico ico-sm" style="width:11px;height:11px;"><use href="#i-play"/></svg> Trailer
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Now Showing -->
-    <div style="padding: 0 16px 12px; display:flex; align-items:center; justify-content:space-between;">
-      <div class="section-title" style="margin-bottom:0;">Now Showing</div>
-      <span style="font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;" onclick="goTab('search')">Lihat Semua ›</span>
+    <div style="padding: 0 16px;">
+      <div class="section-title">Now Showing</div>
     </div>
-    <div class="home-movies-grid" id="now-showing-row"></div>
+    <div class="movies-row scroll-x" id="now-showing-row"></div>
 
     <!-- Coming Soon -->
-    <div style="padding: 20px 16px 12px; display:flex; align-items:center; justify-content:space-between;">
-      <div class="section-title" style="margin-bottom:0;">Coming Soon</div>
-      <span style="font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;" onclick="goTab('search')">Lihat Semua ›</span>
+    <div style="padding: 18px 16px 0;">
+      <div class="section-title">Coming Soon</div>
     </div>
-    <div class="home-movies-grid" id="coming-soon-row"></div>
+    <div class="movies-row scroll-x" id="coming-soon-row"></div>
   </div>
 
   <!-- ═══════════════════════════════════════════
@@ -2149,8 +2113,8 @@ const movies = [
     rating:7.4, votes:'335k', duration:'2j 13m', director:'Brad Bird',
     format:['IMAX','Regular'],
     tags:['Spy','Aksi','Thriller'],
-    poster:'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/mi4ghost/400/600',
+    backdrop:'https://picsum.photos/seed/mi4ghost-bg/800/500',
     synopsis:'Agen IMF Ethan Hunt bersama tim barunya terpaksa beroperasi sendiri setelah seluruh divisi IMF dibubarkan. Tersudut sebagai tersangka pengeboman Kremlin, Ethan harus membuktikan innocence-nya sekaligus menghentikan ancaman nuklir global.',
     priceFrom:50000 },
 
@@ -2160,8 +2124,8 @@ const movies = [
     rating:8.4, votes:'95k', duration:'2j 35m', director:'Haruo Sotozaki',
     format:['IMAX','Regular','4DX'],
     tags:['Anime','Pertarungan','Supernatural'],
-    poster:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/demonslayer2025/400/600',
+    backdrop:'https://picsum.photos/seed/demonslayer2025-bg/800/500',
     synopsis:'Korps Pembasmi Iblis terseret ke Infinity Castle, di mana Tanjiro, Nezuko, dan para Hashira menghadapi pertarungan maut melawan Upper Rank Demons dalam pertempuran final melawan Muzan Kibutsuji.',
     priceFrom:65000 },
 
@@ -2171,8 +2135,8 @@ const movies = [
     rating:7.1, votes:'4.2k', duration:'1j 50m', director:'Fajar Bustomi',
     format:['Regular'],
     tags:['Romansa','Indonesia','Remaja'],
-    poster:'https://images.unsplash.com/photo-1516589091380-5d8e87df6999?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1516589091380-5d8e87df6999?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/dilan1990film/400/600',
+    backdrop:'https://picsum.photos/seed/dilan1990film-bg/800/500',
     synopsis:'Milea pindah dari Jakarta ke Bandung dan bertemu Dilan — sosok lelaki unik, puitis, penuh kejutan. Di antara gang motor, buku puisi, dan teka-teki kata-kata, cinta pertama tumbuh perlahan namun begitu dalam.',
     priceFrom:40000 },
 
@@ -2182,8 +2146,8 @@ const movies = [
     rating:7.6, votes:'8.9k', duration:'1j 59m', director:'Muhadkly Acho',
     format:['Regular'],
     tags:['Komedi','Indonesia','Horor'],
-    poster:'https://images.unsplash.com/photo-1604881988758-f76ad2f7aac1?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1604881988758-f76ad2f7aac1?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/agaklaen2024/400/600',
+    backdrop:'https://picsum.photos/seed/agaklaen2024-bg/800/500',
     synopsis:'Empat sekawan — Boris, Jegel, Bene, dan Oki — bekerja sebagai penjaga wahana rumah hantu di pasar malam. Masalah datang ketika wahana mereka yang tidak seram tiba-tiba viral karena ada pengunjung yang benar-benar meninggal.',
     priceFrom:45000 },
 
@@ -2193,8 +2157,8 @@ const movies = [
     rating:6.2, votes:'47k', duration:'2j 15m', director:'Michael Chaves',
     format:['Regular','4DX'],
     tags:['Horor','Supranatural','Iblis'],
-    poster:'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/conjuring4lastrits/400/600',
+    backdrop:'https://picsum.photos/seed/conjuring4lastrits-bg/800/500',
     synopsis:'Investigator paranormal Ed dan Lorraine Warren menghadapi kasus terakhir dan terberat mereka — keluarga Smurl yang dihantui oleh entitas jahat sangat kuat. Pertarungan final antara iman, cinta, dan kegelapan.',
     priceFrom:55000 },
 
@@ -2204,8 +2168,8 @@ const movies = [
     rating:8.8, votes:'1.9M', duration:'2j 58m', director:'Peter Jackson',
     format:['IMAX','Regular'],
     tags:['Epic','Fantasi','Petualangan'],
-    poster:'https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/lotrfellowship/400/600',
+    backdrop:'https://picsum.photos/seed/lotrfellowship-bg/800/500',
     synopsis:'Frodo Baggins mewarisi cincin kekuasaan yang paling berbahaya. Bersama Fellowship yang terdiri dari sembilan sahabat, ia memulai perjalanan epik melintasi Middle-earth untuk menghancurkan One Ring sebelum Sauron berkuasa.',
     priceFrom:60000 },
 
@@ -2216,8 +2180,8 @@ const movies = [
     rating:7.5, votes:'420k', duration:'2j 8m', director:'Shawn Levy',
     format:['IMAX','Regular','4DX'],
     tags:['Marvel','Superhero','Komedi'],
-    poster:'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/deadpoolwolverine24/400/600',
+    backdrop:'https://picsum.photos/seed/deadpoolwolverine24-bg/800/500',
     synopsis:'Wade Wilson kembali sebagai Deadpool dan dipaksa bergabung dengan MCU bersama Wolverine yang enggan. Ketika alam semesta tempat tinggal Wade terancam musnah, duet paling tidak mungkin ini harus bekerja sama.',
     priceFrom:70000, comingSoon:true, releaseDate:'26 Jul 2024' },
 
@@ -2227,8 +2191,8 @@ const movies = [
     rating:7.6, votes:'605k', duration:'2j 9m', director:'Jon Watts',
     format:['IMAX','Regular'],
     tags:['Marvel','Superhero','Eropa'],
-    poster:'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/spidermanfarfromhome/400/600',
+    backdrop:'https://picsum.photos/seed/spidermanfarfromhome-bg/800/500',
     synopsis:'Setelah peristiwa Avengers: Endgame, Peter Parker ikut liburan ke Eropa bersama teman-temannya. Rencananya buyar ketika Nick Fury memintanya menghadapi serangan makhluk elemental misterius bersama pahlawan baru Mysterio.',
     priceFrom:60000, comingSoon:true, releaseDate:'2 Jul 2024' },
 
@@ -2238,8 +2202,8 @@ const movies = [
     rating:7.2, votes:'28k', duration:'1j 50m', director:'Kane Parsons',
     format:['Regular','IMAX'],
     tags:['Horor','Psikologis','Liminal'],
-    poster:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/backroomsa24horror/400/600',
+    backdrop:'https://picsum.photos/seed/backroomsa24horror-bg/800/500',
     synopsis:'Seorang pria terjebak di labirin ruangan tanpa ujung — The Backrooms. Sebuah dimensi liminal yang terasa familiar namun tak berpenghuni. Tapi ia tidak sendirian. Sesuatu mengintainya di balik koridor-koridor fluorescent.',
     priceFrom:55000, comingSoon:true, releaseDate:'29 Mei 2026' },
 
@@ -2249,8 +2213,8 @@ const movies = [
     rating:8.3, votes:'62k', duration:'2j 0m', director:'Tatsuya Yoshihara',
     format:['IMAX','Regular'],
     tags:['Anime','MAPPA','Aksi'],
-    poster:'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/chainsawmanrezearc/400/600',
+    backdrop:'https://picsum.photos/seed/chainsawmanrezearc-bg/800/500',
     synopsis:'Denji bertemu gadis misterius bernama Reze di sebuah kafe. Namun di balik senyum manisnya tersimpan identitas mematikan — Bomb Devil. Kisah cinta penuh darah dan ledakan dari studio MAPPA.',
     priceFrom:65000, comingSoon:true, releaseDate:'24 Okt 2025' },
 
@@ -2260,8 +2224,8 @@ const movies = [
     rating:6.3, votes:'112k', duration:'1j 40m', director:'David G. Derrick Jr.',
     format:['Regular','3D','4DX'],
     tags:['Disney','Animasi','Musik'],
-    poster:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/moana2disney2024/400/600',
+    backdrop:'https://picsum.photos/seed/moana2disney2024-bg/800/500',
     synopsis:'Tiga tahun setelah petualangan pertamanya, Moana menerima panggilan dari leluhurnya untuk berlayar ke lautan yang belum terjamah. Bersama kru baru dan Maui, ia menghadapi bahaya baru demi menyatukan kembali masyarakat Oceania.',
     priceFrom:55000, comingSoon:true, releaseDate:'27 Nov 2024' },
 
@@ -2271,8 +2235,8 @@ const movies = [
     rating:8.5, votes:'680k', duration:'2j 46m', director:'Denis Villeneuve',
     format:['ULTRA HD','IMAX','4DX'],
     tags:['Epic','Sci-Fi','Gurun'],
-    poster:'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=600&fit=crop&q=80',
-    backdrop:'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=500&fit=crop&q=80',
+    poster:'https://picsum.photos/seed/duneparttwo2024/400/600',
+    backdrop:'https://picsum.photos/seed/duneparttwo2024-bg/800/500',
     synopsis:'Paul Atreides bersatu dengan Chani dan bangsa Fremen untuk membalas dendam terhadap konspirasi yang menghancurkan keluarganya. Menghadapi pilihan antara cinta sejatinya dan nasib alam semesta.',
     priceFrom:75000, comingSoon:true, releaseDate:'1 Mar 2024' }
 ];
@@ -2298,9 +2262,9 @@ const promos = [
 // My tickets — mutable, can be deleted
 let myTickets = [
   { id:'MVX-8829-9102', movieTitle:'Demon Slayer: Infinity Castle', format:'IMAX', cinema:'Grand Premiere Hall', studio:'Studio 01', date:'24 Okt 2025', time:'19:45', seats:['H12','H13'], row:'Row H',
-    poster:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=600&fit=crop&q=80' },
+    poster:'https://picsum.photos/seed/demonslayer2025/400/600' },
   { id:'MVX-7729-1004', movieTitle:'Mission: Impossible – Ghost Protocol', format:'IMAX', cinema:'Grand Lounge 4', studio:'Studio 01', date:'20 Okt 2025', time:'19:30', seats:['D5','D6'], row:'Row D',
-    poster:'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=400&h=600&fit=crop&q=80' }
+    poster:'https://picsum.photos/seed/mi4ghost/400/600' }
 ];
 
 const cities  = ['Jakarta','Bogor','Depok','Tangerang','Bekasi'];
@@ -2520,13 +2484,12 @@ function closeModal() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // POSTER CANVAS — renders a stylized poster when no image available
 // ═══════════════════════════════════════════════════════════════════════════════
-function makeHomeCard(m, isComingSoon = false) {
-  const fallback = `https://placehold.co/200x300/1B2D4A/E5C34A?text=${encodeURIComponent(m.title.substring(0,10))}`;
+function makeMovieCard(m, isComingSoon = false) {
   return `
-    <div class="home-movie-card" onclick="openMovie('${m.id}')">
-      <div class="home-poster-wrap">
+    <div class="movie-card" onclick="openMovie('${m.id}')">
+      <div class="movie-poster-wrap">
         <img src="${m.poster}" alt="${m.title}" loading="lazy"
-             onerror="this.src='${fallback}'">
+             onerror="this.src='https://placehold.co/175x260/1B2D4A/E5C34A?text=${encodeURIComponent(m.title.substring(0,12))}'">
         <div class="rating-badge">
           <svg class="ico" style="width:11px;height:11px;"><use href="#i-star"/></svg>${m.rating}
         </div>
@@ -2541,9 +2504,9 @@ function renderHome() {
   const nowShowing = movies.filter(m => !m.comingSoon);
   const comingSoon  = movies.filter(m =>  m.comingSoon);
   const nr = document.getElementById('now-showing-row');
-  nr.innerHTML = nowShowing.map(m => makeHomeCard(m, false)).join('');
+  nr.innerHTML = nowShowing.map(m => makeMovieCard(m, false)).join('');
   const cs = document.getElementById('coming-soon-row');
-  if (cs) cs.innerHTML = comingSoon.map(m => makeHomeCard(m, true)).join('');
+  if (cs) cs.innerHTML = comingSoon.map(m => makeMovieCard(m, true)).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
